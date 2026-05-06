@@ -46,8 +46,10 @@ export interface TaskListItem {
   sort_order: number;
   task_type: TaskType;
   target_value: number;
+  target_meta: Record<string, unknown>;
   reward_type: TaskRewardType;
   reward_value: number;
+  reward_meta: Record<string, unknown>;
   user_audience: TaskUserAudience;
   promo_group_id: number | null;
   parent_task_id: number | null;

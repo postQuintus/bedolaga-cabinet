@@ -1178,6 +1178,8 @@
         "spend_min1": "Amount must be at least 1 ₽.",
         "multi_tariff_min2": "For multi-tariff, at least 2 active tariffs are required.",
         "reward_negative": "Reward cannot be negative.",
+        "balance_reward_min1": "Balance reward must be greater than 0 ₽.",
+        "subscription_days_or_tariff_required": "Enter days > 0 or enable tariff bonus.",
         "reward_tariff_required": "Pick a tariff for bonus days.",
         "channel_id_and_title_required": "Channel ID and title are required."
       },

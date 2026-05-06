@@ -174,20 +174,32 @@ function pickString(value: unknown): string {
   return '';
 }
 
+/**
+ * Конвертирует UTC ISO datetime в формат для `<input type="datetime-local">` в локальной TZ
+ * пользователя. Без этого UTC-строка `2026-05-06T07:00:00Z` интерпретируется как локальная,
+ * и при каждом edit время уходит на UTC offset.
+ */
+function isoToDatetimeLocal(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  // toISOString вернёт UTC; нужен local. Получаем компоненты вручную.
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function fromTask(task: Task): TaskFormState {
   const targetMeta = (task.target_meta || {}) as Record<string, unknown>;
   const rewardMeta = (task.reward_meta || {}) as Record<string, unknown>;
   const rewardTariffIdRaw = pickNum(rewardMeta.tariff_id);
 
-  // For spend_amount we store rubles in the form
-  const spendRubles =
-    task.task_type === 'spend_amount' ? Math.round((task.target_value || 0) / 100) : 100;
+  // Для spend_amount — копейки → рубли с сохранением точности до 0.01 (не округляем
+  // до целых, иначе round-trip 100.50 ₽ → 101 ₽ при каждом редактировании).
+  const spendRubles = task.task_type === 'spend_amount' ? (task.target_value || 0) / 100 : 100;
 
-  // For balance reward — kopeks → rubles in the form
+  // Для balance — копейки → рубли с той же 0.01 precision.
   const formRewardValue =
-    task.reward_type === 'balance'
-      ? Math.round((task.reward_value || 0) / 100)
-      : (task.reward_value ?? 0);
+    task.reward_type === 'balance' ? (task.reward_value || 0) / 100 : (task.reward_value ?? 0);
 
   return {
     id: task.id,
@@ -212,8 +224,8 @@ function fromTask(task: Task): TaskFormState {
     promo_group_id: task.promo_group_id ?? null,
     parent_task_id: task.parent_task_id ?? null,
     level: task.level,
-    starts_at: task.starts_at?.slice(0, 16) || '',
-    ends_at: task.ends_at?.slice(0, 16) || '',
+    starts_at: isoToDatetimeLocal(task.starts_at),
+    ends_at: isoToDatetimeLocal(task.ends_at),
     sort_order: task.sort_order,
   };
 }
@@ -284,10 +296,12 @@ function validateForm(form: TaskFormState): FormErrors {
       break;
   }
 
-  // Reward validation
+  // Reward validation. Backend требует:
+  //   balance: reward_value > 0
+  //   subscription_days: reward_value > 0 OR reward_meta.tariff_id указан
   if (form.reward_type === 'balance') {
-    if (form.reward_value < 0) {
-      errors.reward_value = 'admin.tasks.errors.reward_negative';
+    if (form.reward_value <= 0) {
+      errors.reward_value = 'admin.tasks.errors.balance_reward_min1';
     }
   } else if (form.reward_type === 'subscription_days') {
     if (form.reward_use_tariff_bonus && !form.reward_tariff_id) {
@@ -295,6 +309,9 @@ function validateForm(form: TaskFormState): FormErrors {
     }
     if (form.reward_value < 0) {
       errors.reward_value = 'admin.tasks.errors.reward_negative';
+    } else if (!form.reward_use_tariff_bonus && form.reward_value <= 0) {
+      // Без bonus-tariff требуется явное число дней > 0
+      errors.reward_value = 'admin.tasks.errors.subscription_days_or_tariff_required';
     }
   }
 
@@ -1477,11 +1494,7 @@ export default function AdminTasks() {
           {groupedTasks.map(({ task, depth }) => {
             const parent = task.parent_task_id ? tasksById.get(task.parent_task_id) : null;
             const targetText = formatTarget(task);
-            const targetTariffId = pickNum(
-              (task as TaskListItem & { target_meta?: Record<string, unknown> }).target_meta?.[
-                'tariff_id'
-              ],
-            );
+            const targetTariffId = pickNum(task.target_meta?.['tariff_id']);
             const tariffName = targetTariffId ? formatTariff(targetTariffId) : '';
             return (
               <li

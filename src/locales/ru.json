@@ -1207,6 +1207,8 @@
         "spend_min1": "Сумма должна быть не меньше 1 ₽.",
         "multi_tariff_min2": "Для multi-tariff минимум 2 активных тарифа.",
         "reward_negative": "Награда не может быть отрицательной.",
+        "balance_reward_min1": "Награда баланса должна быть больше 0 ₽.",
+        "subscription_days_or_tariff_required": "Укажите дней > 0 или включите бонус тарифа.",
         "reward_tariff_required": "Выберите тариф для бонусных дней.",
         "channel_id_and_title_required": "Укажите Channel ID и название канала."
       },
