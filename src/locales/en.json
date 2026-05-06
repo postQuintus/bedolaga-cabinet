@@ -1067,6 +1067,16 @@
       "target": "Target:",
       "confirmDelete": "Delete this task?",
       "channelHint": "Tip: use channel_id from «Partner channels»",
+      "formCreateTitle": "New task",
+      "formEditTitle": "Edit task",
+      "sections": {
+        "description": "Task description",
+        "descriptionHint": "Provide title and description in at least one language. The emoji is shown next to the task in the cabinet.",
+        "goalReward": "Goal & reward",
+        "goalRewardHint": "Pick task type and parameters. Fields adapt to the selected type.",
+        "audienceSchedule": "Audience & schedule",
+        "audienceScheduleHint": "Who should see the task, when it's active, and where it sits in the level chain."
+      },
       "fields": {
         "title_ru": "Title (RU)",
         "title_en": "Title (EN)",
@@ -1074,15 +1084,19 @@
         "description_en": "Description (EN)",
         "task_type": "Task type",
         "target_value": "Target value",
-        "target_meta_json": "Target meta (JSON)",
+        "target_tariff_id": "Tariff",
+        "target_channel_id": "Partner channel",
+        "target_period_days": "Period (days)",
+        "spend_amount_rubles": "Amount (₽)",
         "reward_type": "Reward type",
-        "reward_value_kopeks": "Amount (kopeks)",
+        "reward_value_rubles": "Amount (₽)",
         "reward_value_days": "Subscription days",
-        "reward_meta_json": "Reward meta (JSON)",
+        "reward_use_tariff_bonus": "Use tariff bonus days",
+        "reward_tariff_id": "Tariff for bonus days",
         "allow_user_choice": "Allow user to choose reward",
         "user_audience": "Audience",
-        "promo_group_id": "Promo group (ID)",
-        "parent_task_id": "Previous level (ID)",
+        "promo_group_id": "Promo group",
+        "parent_task_id": "Previous level",
         "level": "Level",
         "sort_order": "Sort order",
         "starts_at": "Starts at",
@@ -1091,6 +1105,16 @@
         "is_active": "Active",
         "any": "any",
         "parent_hint": "leave empty (this is root)"
+      },
+      "placeholders": {
+        "titleRu": "e.g. Пригласи 5 друзей",
+        "titleEn": "e.g. Invite 5 friends",
+        "descRu": "What the user should do",
+        "descEn": "What the user should do",
+        "emojiCustom": "Custom emoji",
+        "selectTariff": "— select tariff —",
+        "rootTask": "— Root task (level 1) —",
+        "allUsersNoPromo": "— All users (no restriction) —"
       },
       "types": {
         "purchase_tariff": "Purchase a specific tariff",
@@ -1102,6 +1126,74 @@
         "multi_tariff": "Hold N+ active tariffs (multi-tariff)",
         "gift_purchased": "Purchase at least 1 gift",
         "gifts_count": "Purchase N gifts"
+      },
+      "typeHints": {
+        "purchase_tariff": "Counts purchases of the selected tariff a chosen number of times.",
+        "subscribe_channel": "User must subscribe to the selected partner channel.",
+        "traffic_used": "Counts total traffic used during the calendar month.",
+        "referrals_invited": "Referral counts after their first top-up.",
+        "purchase_period": "Counts purchases of a tariff for N or more days.",
+        "spend_amount": "Cumulative amount across all paid operations (top-ups, purchases).",
+        "multi_tariff": "Active paid subscriptions held simultaneously (minimum 2).",
+        "gift_purchased": "Counts after purchasing at least one gift.",
+        "gifts_count": "Number of gifts purchased."
+      },
+      "targetLabels": {
+        "purchase_tariff": "How many times to buy",
+        "traffic_used": "How many GB to use",
+        "referrals_invited": "How many referrals to invite",
+        "purchase_period": "How many times to buy",
+        "multi_tariff": "How many active tariffs",
+        "gifts_count": "How many gifts to buy"
+      },
+      "targetHints": {
+        "purchase_tariff": "How many times the user must purchase the selected tariff (default 1).",
+        "traffic_used": "How many GB the user must use during a calendar month.",
+        "referrals_invited": "Invited referrals count (counted after the referral's first top-up).",
+        "purchase_period": "How many times the user must buy a tariff for the specified period or longer.",
+        "multi_tariff": "Active paid subscriptions held simultaneously (minimum 2).",
+        "gifts_count": "Number of gifts the user must purchase."
+      },
+      "help": {
+        "titleAtLeastOne": "Filling either RU or EN is enough.",
+        "emoji": "Pick from popular ones or enter any emoji.",
+        "selectTariff": "Which tariff must be purchased to count progress.",
+        "periodDays": "Minimum number of days for the tariff purchase (e.g. 30).",
+        "spendAmountRubles": "Cumulative amount in rubles the user must spend.",
+        "rewardRubles": "E.g. 100 = 100 ₽. Credited to user balance.",
+        "rewardDays": "How many bonus subscription days the user gets.",
+        "rewardDaysWithBonus": "If 0 and a tariff is selected — bonus_days_per_purchase from the tariff will be used.",
+        "rewardUseTariffBonus": "Days will be taken from the selected tariff's `bonus_days_per_purchase`.",
+        "rewardTariffPick": "The tariff to read the bonus days count from.",
+        "promoGroup": "If set, the task is visible only to users in this group.",
+        "parentTask": "Parent task for the level chain. Level is computed automatically.",
+        "level": "Auto-filled when a parent is picked, can be overridden."
+      },
+      "errors": {
+        "title_required": "Provide a title in at least one language (RU or EN).",
+        "tariff_required": "Pick a tariff from the list.",
+        "channel_required": "Pick a partner channel.",
+        "period_days_required": "Specify the number of days (minimum 1).",
+        "target_value_min1": "Target value must be at least 1.",
+        "spend_min1": "Amount must be at least 1 ₽.",
+        "multi_tariff_min2": "For multi-tariff, at least 2 active tariffs are required.",
+        "reward_negative": "Reward cannot be negative.",
+        "reward_tariff_required": "Pick a tariff for bonus days.",
+        "channel_id_and_title_required": "Channel ID and title are required."
+      },
+      "actions": {
+        "createNextLevel": "Create next level",
+        "clearEmoji": "Clear"
+      },
+      "list": {
+        "rewardLabel": "Reward:",
+        "afterParent": "After #{{id}} (L{{level}})",
+        "daysShort_one": "{{count}} day",
+        "daysShort_other": "{{count}} days",
+        "dailyBadge": "daily"
+      },
+      "aria": {
+        "pickEmoji": "Pick emoji {{emoji}}"
       },
       "rewards": {
         "balance": "Money to balance",
@@ -1117,6 +1209,7 @@
         "subtitle": "Channels for \"Subscribe to channel\" tasks. The bot must be an admin in each channel.",
         "addChannel": "Add channel",
         "edit": "Edit",
+        "manage": "Manage channels",
         "channel_id": "Channel ID (e.g. -1001234567890)",
         "title_field": "Title",
         "channel_link": "Link (https://t.me/...)",

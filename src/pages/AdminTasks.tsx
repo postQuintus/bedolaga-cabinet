@@ -5,6 +5,7 @@ import {
   adminTasksApi,
   adminTaskPartnerChannelsApi,
   type Task,
+  type TaskCreateRequest,
   type TaskListItem,
   type TaskPartnerChannel,
   type TaskPartnerChannelCreateRequest,
@@ -12,6 +13,11 @@ import {
   type TaskType,
   type TaskUserAudience,
 } from '../api/adminTasks';
+import { tariffsApi, type TariffListItem } from '../api/tariffs';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────────────────────────────────────
 
 const TASK_TYPES: { value: TaskType; labelKey: string }[] = [
   { value: 'purchase_tariff', labelKey: 'admin.tasks.types.purchase_tariff' },
@@ -35,6 +41,15 @@ const AUDIENCES: { value: TaskUserAudience; labelKey: string }[] = [
   { value: 'telegram', labelKey: 'admin.tasks.audience.telegram' },
   { value: 'email', labelKey: 'admin.tasks.audience.email' },
 ];
+
+const POPULAR_EMOJIS = ['🎯', '⭐', '🎁', '💰', '🏆', '🚀', '💎', '🔥', '⚡', '🎉'];
+
+// Task types that don't need a target_value field (always 1)
+const HIDDEN_TARGET_VALUE_TYPES: TaskType[] = ['subscribe_channel', 'gift_purchased'];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Partner channel form state
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface PartnerChannelFormState {
   id: number | null;
@@ -79,6 +94,10 @@ function toPartnerPayload(form: PartnerChannelFormState): TaskPartnerChannelCrea
   };
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Task form state — structured (no JSON)
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface TaskFormState {
   id: number | null;
   title_ru: string;
@@ -88,15 +107,24 @@ interface TaskFormState {
   icon: string;
   is_active: boolean;
   task_type: TaskType;
+  // target_value is decoupled from the target_meta for clarity.
+  // For spend_amount we store rubles in form (and convert to kopeks on submit).
   target_value: number;
-  target_meta_json: string;
+  spend_amount_rubles: number;
+  // target meta dedicated fields
+  target_tariff_id: number | null;
+  target_channel_id: string;
+  target_period_days: number;
+  // reward
   reward_type: TaskRewardType;
-  reward_value: number;
-  reward_meta_json: string;
+  reward_value: number; // for balance — rubles in form (×100 on submit); for days — direct
+  reward_use_tariff_bonus: boolean; // toggles `{ tariff_id }` reward_meta for subscription_days
+  reward_tariff_id: number | null;
+  // misc
   allow_user_choice: boolean;
   user_audience: TaskUserAudience;
-  promo_group_id: number | '';
-  parent_task_id: number | '';
+  promo_group_id: number | null;
+  parent_task_id: number | null;
   level: number;
   starts_at: string;
   ends_at: string;
@@ -113,21 +141,54 @@ const emptyForm: TaskFormState = {
   is_active: true,
   task_type: 'referrals_invited',
   target_value: 5,
-  target_meta_json: '{}',
+  spend_amount_rubles: 100,
+  target_tariff_id: null,
+  target_channel_id: '',
+  target_period_days: 30,
   reward_type: 'balance',
-  reward_value: 10000,
-  reward_meta_json: '{}',
+  reward_value: 100, // rubles for balance, days for subscription_days
+  reward_use_tariff_bonus: false,
+  reward_tariff_id: null,
   allow_user_choice: false,
   user_audience: 'both',
-  promo_group_id: '',
-  parent_task_id: '',
+  promo_group_id: null,
+  parent_task_id: null,
   level: 1,
   starts_at: '',
   ends_at: '',
   sort_order: 0,
 };
 
+function pickNum(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function pickString(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  return '';
+}
+
 function fromTask(task: Task): TaskFormState {
+  const targetMeta = (task.target_meta || {}) as Record<string, unknown>;
+  const rewardMeta = (task.reward_meta || {}) as Record<string, unknown>;
+  const rewardTariffIdRaw = pickNum(rewardMeta.tariff_id);
+
+  // For spend_amount we store rubles in the form
+  const spendRubles =
+    task.task_type === 'spend_amount' ? Math.round((task.target_value || 0) / 100) : 100;
+
+  // For balance reward — kopeks → rubles in the form
+  const formRewardValue =
+    task.reward_type === 'balance'
+      ? Math.round((task.reward_value || 0) / 100)
+      : (task.reward_value ?? 0);
+
   return {
     id: task.id,
     title_ru: task.title?.ru || '',
@@ -138,14 +199,18 @@ function fromTask(task: Task): TaskFormState {
     is_active: task.is_active,
     task_type: task.task_type,
     target_value: task.target_value,
-    target_meta_json: JSON.stringify(task.target_meta || {}, null, 2),
+    spend_amount_rubles: spendRubles,
+    target_tariff_id: pickNum(targetMeta.tariff_id),
+    target_channel_id: pickString(targetMeta.channel_id),
+    target_period_days: pickNum(targetMeta.period_days) ?? 30,
     reward_type: task.reward_type,
-    reward_value: task.reward_value,
-    reward_meta_json: JSON.stringify(task.reward_meta || {}, null, 2),
+    reward_value: formRewardValue,
+    reward_use_tariff_bonus: task.reward_type === 'subscription_days' && rewardTariffIdRaw !== null,
+    reward_tariff_id: rewardTariffIdRaw,
     allow_user_choice: task.allow_user_choice,
     user_audience: task.user_audience,
-    promo_group_id: task.promo_group_id ?? '',
-    parent_task_id: task.parent_task_id ?? '',
+    promo_group_id: task.promo_group_id ?? null,
+    parent_task_id: task.parent_task_id ?? null,
     level: task.level,
     starts_at: task.starts_at?.slice(0, 16) || '',
     ends_at: task.ends_at?.slice(0, 16) || '',
@@ -153,23 +218,135 @@ function fromTask(task: Task): TaskFormState {
   };
 }
 
-function toPayload(form: TaskFormState) {
-  let targetMeta: Record<string, unknown> = {};
-  let rewardMeta: Record<string, unknown> = {};
-  try {
-    targetMeta = form.target_meta_json.trim() ? JSON.parse(form.target_meta_json) : {};
-  } catch {
-    throw new Error('invalid_target_meta_json');
+// ─────────────────────────────────────────────────────────────────────────────
+// Validation
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface FormErrors {
+  title?: string;
+  target_tariff_id?: string;
+  target_channel_id?: string;
+  target_period_days?: string;
+  target_value?: string;
+  spend_amount_rubles?: string;
+  reward_value?: string;
+  reward_tariff_id?: string;
+}
+
+function validateForm(form: TaskFormState): FormErrors {
+  const errors: FormErrors = {};
+
+  if (!form.title_ru.trim() && !form.title_en.trim()) {
+    errors.title = 'admin.tasks.errors.title_required';
   }
-  try {
-    rewardMeta = form.reward_meta_json.trim() ? JSON.parse(form.reward_meta_json) : {};
-  } catch {
-    throw new Error('invalid_reward_meta_json');
+
+  switch (form.task_type) {
+    case 'purchase_tariff':
+      if (!form.target_tariff_id) {
+        errors.target_tariff_id = 'admin.tasks.errors.tariff_required';
+      }
+      if (form.target_value < 1) {
+        errors.target_value = 'admin.tasks.errors.target_value_min1';
+      }
+      break;
+    case 'subscribe_channel':
+      if (!form.target_channel_id.trim()) {
+        errors.target_channel_id = 'admin.tasks.errors.channel_required';
+      }
+      break;
+    case 'purchase_period':
+      if (!form.target_period_days || form.target_period_days < 1) {
+        errors.target_period_days = 'admin.tasks.errors.period_days_required';
+      }
+      if (form.target_value < 1) {
+        errors.target_value = 'admin.tasks.errors.target_value_min1';
+      }
+      break;
+    case 'spend_amount':
+      if (!form.spend_amount_rubles || form.spend_amount_rubles < 1) {
+        errors.spend_amount_rubles = 'admin.tasks.errors.spend_min1';
+      }
+      break;
+    case 'multi_tariff':
+      if (form.target_value < 2) {
+        errors.target_value = 'admin.tasks.errors.multi_tariff_min2';
+      }
+      break;
+    case 'gifts_count':
+    case 'traffic_used':
+    case 'referrals_invited':
+      if (form.target_value < 1) {
+        errors.target_value = 'admin.tasks.errors.target_value_min1';
+      }
+      break;
+    case 'gift_purchased':
+      // target_value is fixed to 1 — no validation needed
+      break;
   }
+
+  // Reward validation
+  if (form.reward_type === 'balance') {
+    if (form.reward_value < 0) {
+      errors.reward_value = 'admin.tasks.errors.reward_negative';
+    }
+  } else if (form.reward_type === 'subscription_days') {
+    if (form.reward_use_tariff_bonus && !form.reward_tariff_id) {
+      errors.reward_tariff_id = 'admin.tasks.errors.reward_tariff_required';
+    }
+    if (form.reward_value < 0) {
+      errors.reward_value = 'admin.tasks.errors.reward_negative';
+    }
+  }
+
+  return errors;
+}
+
+function toPayload(form: TaskFormState): TaskCreateRequest {
+  // Build target_meta based on task type
+  const targetMeta: Record<string, unknown> = {};
+  let computedTargetValue = Math.max(1, form.target_value || 1);
+
+  switch (form.task_type) {
+    case 'purchase_tariff':
+      if (form.target_tariff_id) targetMeta.tariff_id = form.target_tariff_id;
+      break;
+    case 'subscribe_channel':
+      targetMeta.channel_id = form.target_channel_id.trim();
+      computedTargetValue = 1;
+      break;
+    case 'purchase_period':
+      if (form.target_period_days) targetMeta.period_days = form.target_period_days;
+      break;
+    case 'spend_amount':
+      computedTargetValue = Math.max(1, Math.round((form.spend_amount_rubles || 0) * 100));
+      break;
+    case 'gift_purchased':
+      computedTargetValue = 1;
+      break;
+    default:
+      break;
+  }
+
+  // Build reward_meta
+  const rewardMeta: Record<string, unknown> = {};
+  if (
+    form.reward_type === 'subscription_days' &&
+    form.reward_use_tariff_bonus &&
+    form.reward_tariff_id
+  ) {
+    rewardMeta.tariff_id = form.reward_tariff_id;
+  }
+
+  // Convert reward_value to wire format (balance: rubles → kopeks)
+  const rewardValueWire =
+    form.reward_type === 'balance'
+      ? Math.max(0, Math.round((form.reward_value || 0) * 100))
+      : Math.max(0, form.reward_value || 0);
 
   const title: Record<string, string> = {};
   if (form.title_ru.trim()) title.ru = form.title_ru.trim();
   if (form.title_en.trim()) title.en = form.title_en.trim();
+
   const description: Record<string, string> = {};
   if (form.description_ru.trim()) description.ru = form.description_ru.trim();
   if (form.description_en.trim()) description.en = form.description_en.trim();
@@ -181,20 +358,24 @@ function toPayload(form: TaskFormState) {
     is_active: form.is_active,
     sort_order: form.sort_order,
     task_type: form.task_type,
-    target_value: Math.max(1, form.target_value),
+    target_value: computedTargetValue,
     target_meta: targetMeta,
     reward_type: form.reward_type,
-    reward_value: Math.max(0, form.reward_value),
+    reward_value: rewardValueWire,
     reward_meta: rewardMeta,
     allow_user_choice: form.allow_user_choice,
     user_audience: form.user_audience,
-    promo_group_id: form.promo_group_id === '' ? null : Number(form.promo_group_id),
-    parent_task_id: form.parent_task_id === '' ? null : Number(form.parent_task_id),
-    level: Math.max(1, form.level),
+    promo_group_id: form.promo_group_id,
+    parent_task_id: form.parent_task_id,
+    level: Math.max(1, form.level || 1),
     starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : null,
     ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function AdminTasks() {
   const { t } = useTranslation();
@@ -202,7 +383,10 @@ export default function AdminTasks() {
   const [form, setForm] = useState<TaskFormState>(emptyForm);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
+  const formRef = useRef<HTMLFormElement>(null);
 
+  // ── Queries ───────────────────────────────────────────────────────────────
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['admin', 'tasks'],
     queryFn: () => adminTasksApi.list(true),
@@ -213,6 +397,18 @@ export default function AdminTasks() {
     queryFn: () => adminTaskPartnerChannelsApi.list(true),
   });
 
+  const { data: tariffsResponse } = useQuery({
+    queryKey: ['admin', 'tariffs', 'for-tasks'],
+    queryFn: () => tariffsApi.getTariffs(true),
+  });
+  const tariffs: TariffListItem[] = tariffsResponse?.tariffs ?? [];
+
+  const { data: promoGroups = [] } = useQuery({
+    queryKey: ['admin', 'promo-groups', 'for-tasks'],
+    queryFn: () => tariffsApi.getAvailablePromoGroups(),
+  });
+
+  // ── Mutations ─────────────────────────────────────────────────────────────
   const createMutation = useMutation({
     mutationFn: adminTasksApi.create,
     onSuccess: () => {
@@ -220,6 +416,7 @@ export default function AdminTasks() {
       setForm(emptyForm);
       setEditing(false);
       setError(null);
+      setFieldErrors({});
     },
     onError: (err: Error & { response?: { data?: { detail?: string } } }) => {
       setError(err?.response?.data?.detail || err.message);
@@ -234,6 +431,7 @@ export default function AdminTasks() {
       setForm(emptyForm);
       setEditing(false);
       setError(null);
+      setFieldErrors({});
     },
     onError: (err: Error & { response?: { data?: { detail?: string } } }) => {
       setError(err?.response?.data?.detail || err.message);
@@ -248,53 +446,11 @@ export default function AdminTasks() {
     },
   });
 
+  // ── Partner channels ──────────────────────────────────────────────────────
   const [partnerForm, setPartnerForm] = useState<PartnerChannelFormState>(emptyPartnerForm);
   const [partnerEditing, setPartnerEditing] = useState(false);
   const [partnerError, setPartnerError] = useState<string | null>(null);
-
-  // Custom confirm dialog: native confirm() unreliable in Telegram WebApp
-  const [confirmState, setConfirmState] = useState<{
-    message: string;
-    onConfirm: () => void;
-  } | null>(null);
-  const confirmCancelRef = useRef<HTMLButtonElement>(null);
-  const confirmLastFocusedRef = useRef<HTMLElement | null>(null);
-  const confirmDialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!confirmState) return;
-    confirmLastFocusedRef.current = document.activeElement as HTMLElement | null;
-    confirmCancelRef.current?.focus();
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        setConfirmState(null);
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const dialog = confirmDialogRef.current;
-      if (!dialog) return;
-      const focusables = dialog.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => {
-      document.removeEventListener('keydown', handleKey);
-      confirmLastFocusedRef.current?.focus?.();
-    };
-  }, [confirmState]);
+  const partnerSectionRef = useRef<HTMLDivElement>(null);
 
   const partnerInvalidate = () =>
     queryClient.invalidateQueries({ queryKey: ['admin', 'task-partner-channels'] });
@@ -345,7 +501,7 @@ export default function AdminTasks() {
     setPartnerError(null);
     const payload = toPartnerPayload(partnerForm);
     if (!payload.channel_id || !payload.title) {
-      setPartnerError('channel_id_and_title_required');
+      setPartnerError(t('admin.tasks.errors.channel_id_and_title_required'));
       return;
     }
     if (partnerForm.id) {
@@ -355,33 +511,142 @@ export default function AdminTasks() {
     }
   };
 
+  // ── Confirm dialog (focus trap, Esc, Tab cycling) ─────────────────────────
+  const [confirmState, setConfirmState] = useState<{
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+  const confirmCancelRef = useRef<HTMLButtonElement>(null);
+  const confirmLastFocusedRef = useRef<HTMLElement | null>(null);
+  const confirmDialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!confirmState) return;
+    confirmLastFocusedRef.current = document.activeElement as HTMLElement | null;
+    confirmCancelRef.current?.focus();
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setConfirmState(null);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const dialog = confirmDialogRef.current;
+      if (!dialog) return;
+      const focusables = dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      confirmLastFocusedRef.current?.focus?.();
+    };
+  }, [confirmState]);
+
+  // ── Sorted tasks + parent/child grouping ──────────────────────────────────
   const sortedTasks = useMemo(
     () =>
       [...tasks].sort((a, b) => a.level - b.level || a.sort_order - b.sort_order || a.id - b.id),
     [tasks],
   );
 
-  const handleEdit = async (item: TaskListItem) => {
-    const full = await adminTasksApi.get(item.id);
-    setForm(fromTask(full));
+  // Build a tree-flat list: roots first, each followed immediately by its descendants
+  const groupedTasks = useMemo(() => {
+    const byParent = new Map<number | null, TaskListItem[]>();
+    for (const item of sortedTasks) {
+      const key = item.parent_task_id ?? null;
+      if (!byParent.has(key)) byParent.set(key, []);
+      byParent.get(key)!.push(item);
+    }
+    const result: { task: TaskListItem; depth: number }[] = [];
+    const visit = (parent: number | null, depth: number) => {
+      const children = byParent.get(parent) || [];
+      for (const c of children) {
+        result.push({ task: c, depth });
+        visit(c.id, depth + 1);
+      }
+    };
+    visit(null, 0);
+    // Append orphan tasks whose parent isn't loaded (defensive)
+    const seen = new Set(result.map((r) => r.task.id));
+    for (const t of sortedTasks) {
+      if (!seen.has(t.id)) result.push({ task: t, depth: 0 });
+    }
+    return result;
+  }, [sortedTasks]);
+
+  const tasksById = useMemo(() => {
+    const map = new Map<number, TaskListItem>();
+    for (const tk of sortedTasks) map.set(tk.id, tk);
+    return map;
+  }, [sortedTasks]);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const startCreate = () => {
+    setForm(emptyForm);
     setEditing(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setError(null);
+    setFieldErrors({});
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  const startCreateChild = (parent: TaskListItem) => {
+    setForm({
+      ...emptyForm,
+      parent_task_id: parent.id,
+      level: parent.level + 1,
+      user_audience: parent.user_audience,
+      promo_group_id: parent.promo_group_id ?? null,
+    });
+    setEditing(true);
+    setError(null);
+    setFieldErrors({});
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  const handleEdit = async (item: TaskListItem) => {
+    try {
+      const full = await adminTasksApi.get(item.id);
+      setForm(fromTask(full));
+      setEditing(true);
+      setError(null);
+      setFieldErrors({});
+      requestAnimationFrame(() => {
+        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    } catch (err) {
+      setError((err as Error).message);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    let payload;
-    try {
-      payload = toPayload(form);
-    } catch (err) {
-      setError((err as Error).message);
+    const errors = validateForm(form);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      // Show the first error in the banner for clarity
+      const firstKey = Object.values(errors)[0];
+      if (firstKey) setError(t(firstKey));
       return;
     }
-    if (!payload.title.ru && !payload.title.en) {
-      setError('title_required');
-      return;
-    }
+    const payload = toPayload(form);
     if (form.id) {
       updateMutation.mutate({ id: form.id, payload });
     } else {
@@ -389,29 +654,82 @@ export default function AdminTasks() {
     }
   };
 
+  const updateForm = <K extends keyof TaskFormState>(key: K, value: TaskFormState[K]) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+  const handleParentChange = (parentId: number | null) => {
+    if (parentId === null) {
+      setForm((prev) => ({ ...prev, parent_task_id: null, level: 1 }));
+      return;
+    }
+    const parent = tasksById.get(parentId);
+    setForm((prev) => ({
+      ...prev,
+      parent_task_id: parentId,
+      level: parent ? parent.level + 1 : prev.level,
+    }));
+  };
+
+  const scrollToPartnerSection = () => {
+    partnerSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setPartnerEditing(true);
+    setPartnerForm(emptyPartnerForm);
+  };
+
+  // ── Style helpers ─────────────────────────────────────────────────────────
   const labelClass = 'mb-1 block text-sm font-medium text-dark-300';
   const inputClass =
     'w-full rounded-xl border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-white outline-none focus:border-accent-500';
+  const inputErrorClass =
+    'w-full rounded-xl border border-error-500 bg-dark-800 px-3 py-2 text-sm text-white outline-none focus:border-error-400';
+  const helpTextClass = 'mt-1 text-xs text-dark-400';
+  const errorTextClass = 'mt-1 text-xs text-error-400';
+  const sectionClass = 'rounded-2xl border border-dark-700 bg-dark-800/40 p-4';
+  const sectionTitleClass = 'text-base font-semibold text-white';
+  const sectionSubtitleClass = 'mt-0.5 text-xs text-dark-400';
 
+  // ── Format helpers ────────────────────────────────────────────────────────
+  const formatTaskTypeLabel = (type: TaskType): string =>
+    t(`admin.tasks.types.${type}`, { defaultValue: type });
+
+  const formatReward = (rewardType: TaskRewardType, rewardValue: number): string => {
+    if (rewardType === 'balance') {
+      return `${(rewardValue / 100).toFixed(2)} ₽`;
+    }
+    return t('admin.tasks.list.daysShort', { count: rewardValue });
+  };
+
+  const formatTarget = (item: TaskListItem): string => {
+    if (HIDDEN_TARGET_VALUE_TYPES.includes(item.task_type)) {
+      return '';
+    }
+    if (item.task_type === 'spend_amount') {
+      return `${(item.target_value / 100).toFixed(2)} ₽`;
+    }
+    return String(item.target_value);
+  };
+
+  const formatTariff = (id: number | null): string => {
+    if (!id) return '';
+    const tar = tariffs.find((tk) => tk.id === id);
+    return tar ? tar.name : `#${id}`;
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">{t('admin.tasks.title')}</h1>
         <button
           type="button"
-          onClick={() => {
-            setForm(emptyForm);
-            setEditing(true);
-            setError(null);
-          }}
+          onClick={startCreate}
           className="rounded-xl bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-400"
         >
           {t('admin.tasks.create')}
         </button>
       </div>
 
-      {/* Page-level error banner — отображается даже когда форма закрыта (например,
-          при ошибке delete). В формах есть свои inline-баннеры для контекста ввода. */}
+      {/* Page-level error banners (shown when forms are closed) */}
       {!editing && error ? (
         <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-400">
           <span>{error}</span>
@@ -437,291 +755,501 @@ export default function AdminTasks() {
         </div>
       ) : null}
 
+      {/* ── Task form ──────────────────────────────────────────────────── */}
       {editing ? (
         <form
+          ref={formRef}
           onSubmit={handleSubmit}
-          className="mb-6 grid gap-3 rounded-2xl border border-dark-700 bg-dark-800/60 p-4"
+          className="mb-6 flex flex-col gap-4 rounded-2xl border border-dark-700 bg-dark-800/60 p-4"
         >
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.title_ru')}</label>
-              <input
-                className={inputClass}
-                value={form.title_ru}
-                onChange={(e) => setForm({ ...form, title_ru: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.title_en')}</label>
-              <input
-                className={inputClass}
-                value={form.title_en}
-                onChange={(e) => setForm({ ...form, title_en: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.description_ru')}</label>
-              <textarea
-                className={inputClass}
-                rows={2}
-                value={form.description_ru}
-                onChange={(e) => setForm({ ...form, description_ru: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.description_en')}</label>
-              <textarea
-                className={inputClass}
-                rows={2}
-                value={form.description_en}
-                onChange={(e) => setForm({ ...form, description_en: e.target.value })}
-              />
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-white">
+              {form.id ? t('admin.tasks.formEditTitle') : t('admin.tasks.formCreateTitle')}
+            </h2>
+            {form.id ? (
+              <span className="rounded-full bg-dark-700 px-2 py-0.5 text-xs text-dark-300">
+                ID #{form.id}
+              </span>
+            ) : null}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.task_type')}</label>
-              <select
-                className={inputClass}
-                value={form.task_type}
-                onChange={(e) => setForm({ ...form, task_type: e.target.value as TaskType })}
-              >
-                {TASK_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.labelKey)}
-                  </option>
+          {/* ── SECTION 1: Description ──────────────────────────────────── */}
+          <div className={sectionClass}>
+            <div className="mb-3">
+              <h3 className={sectionTitleClass}>{t('admin.tasks.sections.description')}</h3>
+              <p className={sectionSubtitleClass}>{t('admin.tasks.sections.descriptionHint')}</p>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.title_ru')}</label>
+                <input
+                  className={fieldErrors.title ? inputErrorClass : inputClass}
+                  value={form.title_ru}
+                  onChange={(e) => updateForm('title_ru', e.target.value)}
+                  placeholder={t('admin.tasks.placeholders.titleRu')}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.title_en')}</label>
+                <input
+                  className={fieldErrors.title ? inputErrorClass : inputClass}
+                  value={form.title_en}
+                  onChange={(e) => updateForm('title_en', e.target.value)}
+                  placeholder={t('admin.tasks.placeholders.titleEn')}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.description_ru')}</label>
+                <textarea
+                  className={inputClass}
+                  rows={2}
+                  value={form.description_ru}
+                  onChange={(e) => updateForm('description_ru', e.target.value)}
+                  placeholder={t('admin.tasks.placeholders.descRu')}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.description_en')}</label>
+                <textarea
+                  className={inputClass}
+                  rows={2}
+                  value={form.description_en}
+                  onChange={(e) => updateForm('description_en', e.target.value)}
+                  placeholder={t('admin.tasks.placeholders.descEn')}
+                />
+              </div>
+            </div>
+            {fieldErrors.title ? (
+              <p className={errorTextClass}>{t(fieldErrors.title)}</p>
+            ) : (
+              <p className={helpTextClass}>{t('admin.tasks.help.titleAtLeastOne')}</p>
+            )}
+
+            {/* Emoji picker */}
+            <div className="mt-3">
+              <label className={labelClass}>{t('admin.tasks.fields.icon')}</label>
+              <div className="flex flex-wrap items-center gap-2">
+                {POPULAR_EMOJIS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    onClick={() => updateForm('icon', emoji)}
+                    className={
+                      'flex h-10 w-10 items-center justify-center rounded-xl border text-lg transition ' +
+                      (form.icon === emoji
+                        ? 'border-accent-500 bg-accent-500/10'
+                        : 'border-dark-700 bg-dark-800 hover:border-dark-600')
+                    }
+                    aria-label={t('admin.tasks.aria.pickEmoji', { emoji })}
+                  >
+                    {emoji}
+                  </button>
                 ))}
-              </select>
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.target_value')}</label>
-              <input
-                type="number"
-                min={1}
-                className={inputClass}
-                value={form.target_value}
-                onChange={(e) => setForm({ ...form, target_value: Number(e.target.value) })}
-              />
+                <input
+                  className={inputClass + ' max-w-[140px]'}
+                  value={form.icon}
+                  onChange={(e) => updateForm('icon', e.target.value)}
+                  placeholder={t('admin.tasks.placeholders.emojiCustom')}
+                  aria-label={t('admin.tasks.fields.icon')}
+                />
+                {form.icon ? (
+                  <button
+                    type="button"
+                    onClick={() => updateForm('icon', '')}
+                    className="text-xs text-dark-400 underline-offset-2 hover:underline"
+                  >
+                    {t('admin.tasks.actions.clearEmoji')}
+                  </button>
+                ) : null}
+              </div>
+              <p className={helpTextClass}>{t('admin.tasks.help.emoji')}</p>
             </div>
           </div>
 
-          {form.task_type === 'subscribe_channel' ? (
-            channels.length > 0 ? (
-              <div className="rounded-xl border border-accent-500/30 bg-accent-500/5 p-3">
-                <label className={labelClass}>
-                  {t('admin.tasks.partnerChannels.selectChannel')}
-                </label>
+          {/* ── SECTION 2: Goal & reward ────────────────────────────────── */}
+          <div className={sectionClass}>
+            <div className="mb-3">
+              <h3 className={sectionTitleClass}>{t('admin.tasks.sections.goalReward')}</h3>
+              <p className={sectionSubtitleClass}>{t('admin.tasks.sections.goalRewardHint')}</p>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.task_type')}</label>
                 <select
                   className={inputClass}
-                  defaultValue=""
-                  onChange={(e) => {
-                    const ch = channels.find((c) => c.channel_id === e.target.value);
-                    if (!ch) return;
-                    let meta: Record<string, unknown> = {};
-                    try {
-                      meta = form.target_meta_json.trim() ? JSON.parse(form.target_meta_json) : {};
-                    } catch {
-                      meta = {};
-                    }
-                    meta.channel_id = ch.channel_id;
-                    setForm({ ...form, target_meta_json: JSON.stringify(meta, null, 2) });
-                  }}
+                  value={form.task_type}
+                  onChange={(e) => updateForm('task_type', e.target.value as TaskType)}
                 >
-                  <option value="">{t('admin.tasks.partnerChannels.selectPlaceholder')}</option>
-                  {channels.map((c) => (
-                    <option key={c.id} value={c.channel_id}>
-                      {c.title} ({c.channel_id})
+                  {TASK_TYPES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {t(opt.labelKey)}
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-xs text-dark-400">
-                  {t('admin.tasks.partnerChannels.applyChannelHint')}
-                </p>
+                <p className={helpTextClass}>{t(`admin.tasks.typeHints.${form.task_type}`)}</p>
               </div>
-            ) : (
-              <div className="rounded-xl border border-warning-500/30 bg-warning-500/5 p-3 text-xs text-warning-300">
-                {t('admin.tasks.partnerChannels.empty')}
+
+              {/* Conditional target_value (hidden for some types) */}
+              {!HIDDEN_TARGET_VALUE_TYPES.includes(form.task_type) &&
+              form.task_type !== 'spend_amount' ? (
+                <div>
+                  <label className={labelClass}>
+                    {t(`admin.tasks.targetLabels.${form.task_type}`)}
+                  </label>
+                  <input
+                    type="number"
+                    min={form.task_type === 'multi_tariff' ? 2 : 1}
+                    className={fieldErrors.target_value ? inputErrorClass : inputClass}
+                    value={form.target_value}
+                    onChange={(e) => updateForm('target_value', Number(e.target.value))}
+                  />
+                  {fieldErrors.target_value ? (
+                    <p className={errorTextClass}>{t(fieldErrors.target_value)}</p>
+                  ) : (
+                    <p className={helpTextClass}>
+                      {t(`admin.tasks.targetHints.${form.task_type}`)}
+                    </p>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Conditional spend_amount as rubles */}
+              {form.task_type === 'spend_amount' ? (
+                <div>
+                  <label className={labelClass}>
+                    {t('admin.tasks.fields.spend_amount_rubles')}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    step="0.01"
+                    className={fieldErrors.spend_amount_rubles ? inputErrorClass : inputClass}
+                    value={form.spend_amount_rubles}
+                    onChange={(e) => updateForm('spend_amount_rubles', Number(e.target.value))}
+                  />
+                  {fieldErrors.spend_amount_rubles ? (
+                    <p className={errorTextClass}>{t(fieldErrors.spend_amount_rubles)}</p>
+                  ) : (
+                    <p className={helpTextClass}>{t('admin.tasks.help.spendAmountRubles')}</p>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            {/* Conditional target_meta UI per task_type */}
+            {form.task_type === 'purchase_tariff' ? (
+              <div className="mt-3">
+                <label className={labelClass}>{t('admin.tasks.fields.target_tariff_id')}</label>
+                <select
+                  className={fieldErrors.target_tariff_id ? inputErrorClass : inputClass}
+                  value={form.target_tariff_id ?? ''}
+                  onChange={(e) =>
+                    updateForm('target_tariff_id', e.target.value ? Number(e.target.value) : null)
+                  }
+                >
+                  <option value="">{t('admin.tasks.placeholders.selectTariff')}</option>
+                  {tariffs.map((tar) => (
+                    <option key={tar.id} value={tar.id}>
+                      {tar.name}
+                      {!tar.is_active ? ` — ${t('admin.tasks.inactive')}` : ''}
+                      {tar.is_daily ? ` · ${t('admin.tasks.list.dailyBadge')}` : ''}
+                    </option>
+                  ))}
+                </select>
+                {fieldErrors.target_tariff_id ? (
+                  <p className={errorTextClass}>{t(fieldErrors.target_tariff_id)}</p>
+                ) : (
+                  <p className={helpTextClass}>{t('admin.tasks.help.selectTariff')}</p>
+                )}
               </div>
-            )
-          ) : null}
+            ) : null}
 
-          <div>
-            <label className={labelClass}>
-              {t('admin.tasks.fields.target_meta_json')}{' '}
-              <span className="text-xs text-dark-500">
-                {form.task_type === 'purchase_tariff' && '{ "tariff_id": 12 }'}
-                {form.task_type === 'subscribe_channel' && '{ "channel_id": "-1001234" }'}
-                {form.task_type === 'purchase_period' && '{ "period_days": 30 }'}
-              </span>
-            </label>
-            <textarea
-              className={inputClass + ' font-mono text-xs'}
-              rows={3}
-              value={form.target_meta_json}
-              onChange={(e) => setForm({ ...form, target_meta_json: e.target.value })}
-            />
-          </div>
+            {form.task_type === 'subscribe_channel' ? (
+              <div className="mt-3 rounded-xl border border-accent-500/30 bg-accent-500/5 p-3">
+                <label className={labelClass}>{t('admin.tasks.fields.target_channel_id')}</label>
+                {channels.length > 0 ? (
+                  <select
+                    className={fieldErrors.target_channel_id ? inputErrorClass : inputClass}
+                    value={form.target_channel_id}
+                    onChange={(e) => updateForm('target_channel_id', e.target.value)}
+                  >
+                    <option value="">{t('admin.tasks.partnerChannels.selectPlaceholder')}</option>
+                    {channels.map((c) => (
+                      <option key={c.id} value={c.channel_id}>
+                        {c.title} ({c.channel_id})
+                        {!c.is_active ? ` — ${t('admin.tasks.inactive')}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-warning-500/30 bg-warning-500/5 p-3 text-xs text-warning-300">
+                    <span>{t('admin.tasks.partnerChannels.empty')}</span>
+                    <button
+                      type="button"
+                      onClick={scrollToPartnerSection}
+                      className="rounded-lg bg-warning-500/20 px-2 py-1 text-xs font-medium text-warning-200 hover:bg-warning-500/30"
+                    >
+                      {t('admin.tasks.partnerChannels.manage')}
+                    </button>
+                  </div>
+                )}
+                {fieldErrors.target_channel_id ? (
+                  <p className={errorTextClass}>{t(fieldErrors.target_channel_id)}</p>
+                ) : null}
+              </div>
+            ) : null}
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.reward_type')}</label>
-              <select
-                className={inputClass}
-                value={form.reward_type}
-                onChange={(e) =>
-                  setForm({ ...form, reward_type: e.target.value as TaskRewardType })
-                }
-              >
-                {REWARD_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.labelKey)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className={labelClass}>
-                {form.reward_type === 'balance'
-                  ? t('admin.tasks.fields.reward_value_kopeks')
-                  : t('admin.tasks.fields.reward_value_days')}
-              </label>
-              <input
-                type="number"
-                min={0}
-                className={inputClass}
-                value={form.reward_value}
-                onChange={(e) => setForm({ ...form, reward_value: Number(e.target.value) })}
-              />
-            </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 text-sm text-dark-200">
+            {form.task_type === 'purchase_period' ? (
+              <div className="mt-3">
+                <label className={labelClass}>{t('admin.tasks.fields.target_period_days')}</label>
                 <input
-                  type="checkbox"
-                  checked={form.allow_user_choice}
-                  onChange={(e) => setForm({ ...form, allow_user_choice: e.target.checked })}
+                  type="number"
+                  min={1}
+                  placeholder="30"
+                  className={fieldErrors.target_period_days ? inputErrorClass : inputClass}
+                  value={form.target_period_days}
+                  onChange={(e) => updateForm('target_period_days', Number(e.target.value))}
                 />
-                {t('admin.tasks.fields.allow_user_choice')}
-              </label>
+                {fieldErrors.target_period_days ? (
+                  <p className={errorTextClass}>{t(fieldErrors.target_period_days)}</p>
+                ) : (
+                  <p className={helpTextClass}>{t('admin.tasks.help.periodDays')}</p>
+                )}
+              </div>
+            ) : null}
+
+            {/* Reward block */}
+            <div className="mt-4 rounded-xl border border-dark-700 bg-dark-900/40 p-3">
+              <div className="grid gap-3 md:grid-cols-3">
+                <div>
+                  <label className={labelClass}>{t('admin.tasks.fields.reward_type')}</label>
+                  <select
+                    className={inputClass}
+                    value={form.reward_type}
+                    onChange={(e) => {
+                      const newType = e.target.value as TaskRewardType;
+                      // When switching reward types, reset reward_value to a sensible default
+                      setForm((prev) => ({
+                        ...prev,
+                        reward_type: newType,
+                        reward_value: newType === 'balance' ? 100 : 7,
+                        reward_use_tariff_bonus:
+                          newType === 'subscription_days' ? prev.reward_use_tariff_bonus : false,
+                      }));
+                    }}
+                  >
+                    {REWARD_TYPES.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {t(opt.labelKey)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>
+                    {form.reward_type === 'balance'
+                      ? t('admin.tasks.fields.reward_value_rubles')
+                      : t('admin.tasks.fields.reward_value_days')}
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={form.reward_type === 'balance' ? '0.01' : '1'}
+                    className={fieldErrors.reward_value ? inputErrorClass : inputClass}
+                    value={form.reward_value}
+                    onChange={(e) => updateForm('reward_value', Number(e.target.value))}
+                  />
+                  {fieldErrors.reward_value ? (
+                    <p className={errorTextClass}>{t(fieldErrors.reward_value)}</p>
+                  ) : (
+                    <p className={helpTextClass}>
+                      {form.reward_type === 'balance'
+                        ? t('admin.tasks.help.rewardRubles')
+                        : form.reward_use_tariff_bonus
+                          ? t('admin.tasks.help.rewardDaysWithBonus')
+                          : t('admin.tasks.help.rewardDays')}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-end">
+                  <label className="flex items-center gap-2 text-sm text-dark-200">
+                    <input
+                      type="checkbox"
+                      checked={form.allow_user_choice}
+                      onChange={(e) => updateForm('allow_user_choice', e.target.checked)}
+                    />
+                    <span>{t('admin.tasks.fields.allow_user_choice')}</span>
+                  </label>
+                </div>
+              </div>
+
+              {form.reward_type === 'subscription_days' ? (
+                <div className="mt-3">
+                  <label className="flex items-center gap-2 text-sm text-dark-200">
+                    <input
+                      type="checkbox"
+                      checked={form.reward_use_tariff_bonus}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          reward_use_tariff_bonus: e.target.checked,
+                          reward_tariff_id: e.target.checked ? prev.reward_tariff_id : null,
+                        }))
+                      }
+                    />
+                    <span>{t('admin.tasks.fields.reward_use_tariff_bonus')}</span>
+                  </label>
+                  <p className={helpTextClass}>{t('admin.tasks.help.rewardUseTariffBonus')}</p>
+                  {form.reward_use_tariff_bonus ? (
+                    <div className="mt-2">
+                      <label className={labelClass}>
+                        {t('admin.tasks.fields.reward_tariff_id')}
+                      </label>
+                      <select
+                        className={fieldErrors.reward_tariff_id ? inputErrorClass : inputClass}
+                        value={form.reward_tariff_id ?? ''}
+                        onChange={(e) =>
+                          updateForm(
+                            'reward_tariff_id',
+                            e.target.value ? Number(e.target.value) : null,
+                          )
+                        }
+                      >
+                        <option value="">{t('admin.tasks.placeholders.selectTariff')}</option>
+                        {tariffs.map((tar) => (
+                          <option key={tar.id} value={tar.id}>
+                            {tar.name}
+                            {!tar.is_active ? ` — ${t('admin.tasks.inactive')}` : ''}
+                          </option>
+                        ))}
+                      </select>
+                      {fieldErrors.reward_tariff_id ? (
+                        <p className={errorTextClass}>{t(fieldErrors.reward_tariff_id)}</p>
+                      ) : (
+                        <p className={helpTextClass}>{t('admin.tasks.help.rewardTariffPick')}</p>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
 
-          {form.reward_type === 'subscription_days' ? (
-            <div>
-              <label className={labelClass}>
-                {t('admin.tasks.fields.reward_meta_json')}{' '}
-                <span className="text-xs text-dark-500">{`{ "tariff_id": 12 }`}</span>
-              </label>
-              <textarea
-                className={inputClass + ' font-mono text-xs'}
-                rows={2}
-                value={form.reward_meta_json}
-                onChange={(e) => setForm({ ...form, reward_meta_json: e.target.value })}
-              />
+          {/* ── SECTION 3: Audience & schedule ──────────────────────────── */}
+          <div className={sectionClass}>
+            <div className="mb-3">
+              <h3 className={sectionTitleClass}>{t('admin.tasks.sections.audienceSchedule')}</h3>
+              <p className={sectionSubtitleClass}>
+                {t('admin.tasks.sections.audienceScheduleHint')}
+              </p>
             </div>
-          ) : null}
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.user_audience')}</label>
-              <select
-                className={inputClass}
-                value={form.user_audience}
-                onChange={(e) =>
-                  setForm({ ...form, user_audience: e.target.value as TaskUserAudience })
-                }
-              >
-                {AUDIENCES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.labelKey)}
-                  </option>
-                ))}
-              </select>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.user_audience')}</label>
+                <select
+                  className={inputClass}
+                  value={form.user_audience}
+                  onChange={(e) => updateForm('user_audience', e.target.value as TaskUserAudience)}
+                >
+                  {AUDIENCES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {t(opt.labelKey)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.promo_group_id')}</label>
+                <select
+                  className={inputClass}
+                  value={form.promo_group_id ?? ''}
+                  onChange={(e) =>
+                    updateForm('promo_group_id', e.target.value ? Number(e.target.value) : null)
+                  }
+                >
+                  <option value="">{t('admin.tasks.placeholders.allUsersNoPromo')}</option>
+                  {promoGroups.map((pg) => (
+                    <option key={pg.id} value={pg.id}>
+                      {pg.name}
+                    </option>
+                  ))}
+                </select>
+                <p className={helpTextClass}>{t('admin.tasks.help.promoGroup')}</p>
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.parent_task_id')}</label>
+                <select
+                  className={inputClass}
+                  value={form.parent_task_id ?? ''}
+                  onChange={(e) =>
+                    handleParentChange(e.target.value ? Number(e.target.value) : null)
+                  }
+                >
+                  <option value="">{t('admin.tasks.placeholders.rootTask')}</option>
+                  {sortedTasks
+                    .filter((tk) => !form.id || tk.id !== form.id)
+                    .map((tk) => (
+                      <option key={tk.id} value={tk.id}>
+                        {`#${tk.id} · L${tk.level} · ${tk.title?.ru || tk.title?.en || `#${tk.id}`}`}
+                      </option>
+                    ))}
+                </select>
+                <p className={helpTextClass}>{t('admin.tasks.help.parentTask')}</p>
+              </div>
             </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.promo_group_id')}</label>
-              <input
-                type="number"
-                className={inputClass}
-                placeholder={t('admin.tasks.fields.any')}
-                value={form.promo_group_id}
-                onChange={(e) =>
-                  setForm({ ...form, promo_group_id: e.target.value ? Number(e.target.value) : '' })
-                }
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.parent_task_id')}</label>
-              <input
-                type="number"
-                className={inputClass}
-                placeholder={t('admin.tasks.fields.parent_hint')}
-                value={form.parent_task_id}
-                onChange={(e) =>
-                  setForm({ ...form, parent_task_id: e.target.value ? Number(e.target.value) : '' })
-                }
-              />
-            </div>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-4">
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.level')}</label>
-              <input
-                type="number"
-                min={1}
-                className={inputClass}
-                value={form.level}
-                onChange={(e) => setForm({ ...form, level: Number(e.target.value) })}
-              />
+            <div className="mt-3 grid gap-3 md:grid-cols-4">
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.level')}</label>
+                <input
+                  type="number"
+                  min={1}
+                  className={inputClass}
+                  value={form.level}
+                  onChange={(e) => updateForm('level', Number(e.target.value))}
+                />
+                <p className={helpTextClass}>{t('admin.tasks.help.level')}</p>
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.sort_order')}</label>
+                <input
+                  type="number"
+                  className={inputClass}
+                  value={form.sort_order}
+                  onChange={(e) => updateForm('sort_order', Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.starts_at')}</label>
+                <input
+                  type="datetime-local"
+                  className={inputClass}
+                  value={form.starts_at}
+                  onChange={(e) => updateForm('starts_at', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>{t('admin.tasks.fields.ends_at')}</label>
+                <input
+                  type="datetime-local"
+                  className={inputClass}
+                  value={form.ends_at}
+                  onChange={(e) => updateForm('ends_at', e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.sort_order')}</label>
-              <input
-                type="number"
-                className={inputClass}
-                value={form.sort_order}
-                onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.starts_at')}</label>
-              <input
-                type="datetime-local"
-                className={inputClass}
-                value={form.starts_at}
-                onChange={(e) => setForm({ ...form, starts_at: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.ends_at')}</label>
-              <input
-                type="datetime-local"
-                className={inputClass}
-                value={form.ends_at}
-                onChange={(e) => setForm({ ...form, ends_at: e.target.value })}
-              />
-            </div>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t('admin.tasks.fields.icon')}</label>
-              <input
-                className={inputClass}
-                placeholder="🎯"
-                value={form.icon}
-                onChange={(e) => setForm({ ...form, icon: e.target.value })}
-              />
-            </div>
-            <div className="flex items-end">
+            <div className="mt-3">
               <label className="flex items-center gap-2 text-sm text-dark-200">
                 <input
                   type="checkbox"
                   checked={form.is_active}
-                  onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+                  onChange={(e) => updateForm('is_active', e.target.checked)}
                 />
-                {t('admin.tasks.fields.is_active')}
+                <span>{t('admin.tasks.fields.is_active')}</span>
               </label>
             </div>
           </div>
@@ -746,6 +1274,7 @@ export default function AdminTasks() {
                 setForm(emptyForm);
                 setEditing(false);
                 setError(null);
+                setFieldErrors({});
               }}
               className="rounded-xl bg-dark-700 px-4 py-2 text-sm font-medium text-white hover:bg-dark-600"
             >
@@ -755,7 +1284,11 @@ export default function AdminTasks() {
         </form>
       ) : null}
 
-      <div className="mb-6 rounded-2xl border border-dark-700 bg-dark-800/40 p-4">
+      {/* ── Partner channels section ───────────────────────────────────── */}
+      <div
+        ref={partnerSectionRef}
+        className="mb-6 rounded-2xl border border-dark-700 bg-dark-800/40 p-4"
+      >
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-white">
@@ -888,7 +1421,7 @@ export default function AdminTasks() {
                 className="flex items-center justify-between gap-2 rounded-lg border border-dark-700 bg-dark-900/30 p-2 text-sm"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium text-white">{c.title}</span>
                     <span className="rounded-full bg-dark-700 px-2 py-0.5 font-mono text-xs text-dark-300">
                       {c.channel_id}
@@ -932,66 +1465,109 @@ export default function AdminTasks() {
         )}
       </div>
 
+      {/* ── Tasks list ─────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="text-center text-dark-300">{t('common.loading')}</div>
-      ) : sortedTasks.length === 0 ? (
+      ) : groupedTasks.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-dark-700 p-8 text-center text-dark-300">
           {t('admin.tasks.emptyList')}
         </div>
       ) : (
         <ul className="flex flex-col gap-2">
-          {sortedTasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-center justify-between gap-2 rounded-xl border border-dark-700 bg-dark-800/60 p-3"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-base">{task.icon || '⭐'}</span>
-                  <span className="font-medium text-white">
-                    {task.title?.ru || task.title?.en || `#${task.id}`}
-                  </span>
-                  <span className="rounded-full bg-dark-700 px-2 py-0.5 text-xs text-dark-300">
-                    L{task.level}
-                  </span>
-                  {!task.is_active ? (
-                    <span className="rounded-full bg-error-500/20 px-2 py-0.5 text-xs text-error-400">
-                      {t('admin.tasks.inactive')}
+          {groupedTasks.map(({ task, depth }) => {
+            const parent = task.parent_task_id ? tasksById.get(task.parent_task_id) : null;
+            const targetText = formatTarget(task);
+            const targetTariffId = pickNum(
+              (task as TaskListItem & { target_meta?: Record<string, unknown> }).target_meta?.[
+                'tariff_id'
+              ],
+            );
+            const tariffName = targetTariffId ? formatTariff(targetTariffId) : '';
+            return (
+              <li
+                key={task.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dark-700 bg-dark-800/60 p-3"
+                style={{ marginLeft: depth * 16 }}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-base">{task.icon || '⭐'}</span>
+                    <span className="font-medium text-white">
+                      {task.title?.ru || task.title?.en || `#${task.id}`}
                     </span>
-                  ) : null}
+                    <span className="rounded-full bg-dark-700 px-2 py-0.5 text-xs text-dark-300">
+                      L{task.level}
+                    </span>
+                    <span className="rounded-full bg-dark-900/60 px-2 py-0.5 font-mono text-xs text-dark-400">
+                      #{task.id}
+                    </span>
+                    {parent ? (
+                      <span className="rounded-full bg-accent-500/15 px-2 py-0.5 text-xs text-accent-300">
+                        {t('admin.tasks.list.afterParent', {
+                          id: parent.id,
+                          level: parent.level,
+                        })}
+                      </span>
+                    ) : null}
+                    {!task.is_active ? (
+                      <span className="rounded-full bg-error-500/20 px-2 py-0.5 text-xs text-error-400">
+                        {t('admin.tasks.inactive')}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-dark-400">
+                    <span>{formatTaskTypeLabel(task.task_type)}</span>
+                    {targetText ? (
+                      <span>
+                        {t('admin.tasks.target')} {targetText}
+                      </span>
+                    ) : null}
+                    <span>
+                      {t('admin.tasks.list.rewardLabel')}{' '}
+                      {formatReward(task.reward_type, task.reward_value)}
+                    </span>
+                    {tariffName ? (
+                      <span className="rounded-full bg-dark-700 px-2 py-0.5 text-dark-300">
+                        {tariffName}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
-                <div className="mt-1 text-xs text-dark-400">
-                  {t(`admin.tasks.types.${task.task_type}`)} · {t('admin.tasks.target')}{' '}
-                  {task.target_value} ·{' '}
-                  {task.reward_type === 'balance'
-                    ? `${(task.reward_value / 100).toFixed(2)}₽`
-                    : `${task.reward_value}d`}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startCreateChild(task)}
+                    className="rounded-lg bg-accent-500/15 px-3 py-1 text-xs font-medium text-accent-300 hover:bg-accent-500/25"
+                  >
+                    {t('admin.tasks.actions.createNextLevel')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(task)}
+                    className="rounded-lg bg-dark-700 px-3 py-1 text-xs font-medium text-white hover:bg-dark-600"
+                  >
+                    {t('common.edit')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setConfirmState({
+                        message: t('admin.tasks.confirmDelete'),
+                        onConfirm: () => deleteMutation.mutate(task.id),
+                      })
+                    }
+                    className="rounded-lg bg-error-500/20 px-3 py-1 text-xs font-medium text-error-400 hover:bg-error-500/30"
+                  >
+                    {t('common.delete')}
+                  </button>
                 </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleEdit(task)}
-                className="rounded-lg bg-dark-700 px-3 py-1 text-xs font-medium text-white hover:bg-dark-600"
-              >
-                {t('common.edit')}
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setConfirmState({
-                    message: t('admin.tasks.confirmDelete'),
-                    onConfirm: () => deleteMutation.mutate(task.id),
-                  })
-                }
-                className="rounded-lg bg-error-500/20 px-3 py-1 text-xs font-medium text-error-400 hover:bg-error-500/30"
-              >
-                {t('common.delete')}
-              </button>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
 
+      {/* ── Confirm dialog ─────────────────────────────────────────────── */}
       {confirmState ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur"
