@@ -1046,10 +1046,9 @@ export default function Subscription() {
                           style={{ background: g.trackBg }}
                         >
                           <div
-                            className="absolute inset-0 origin-left rounded-full transition-transform duration-500"
+                            className="absolute inset-0 origin-left rounded-full bg-accent-500 transition-transform duration-500"
                             style={{
                               transform: `scaleX(${purchase.progress_percent / 100})`,
-                              background: `linear-gradient(90deg, ${zone.mainHex}, ${zone.mainHex}80)`,
                             }}
                           />
                         </div>

@@ -321,9 +321,10 @@ export default function Login() {
           safeBottom > 0 ? `${safeBottom + 16}px` : 'calc(1rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
-      {/* Background gradient */}
-      <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-500/10 via-transparent to-transparent" />
+      {/* Flat background — the previous two layered gradients (linear
+          + accent radial halo) read as the airdrop / crypto aesthetic
+          PRODUCT.md explicitly anti-references. Body bg-dark-950 carries
+          the surface alone. */}
 
       {/* Language switcher */}
       <div

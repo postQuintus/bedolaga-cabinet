@@ -282,18 +282,20 @@ export default function SubscriptionCardActive({
 
       {/* ─── Stats row: Tariff + Days Left ─── */}
       <div className="mb-5 flex gap-2.5">
-        {/* Tariff badge — clickable */}
+        {/* Tariff badge — clickable. Neutral chrome: the tariff name has
+            no traffic-zone semantics, so tinting it by the traffic zone
+            (DESIGN.md Status-Hue Lockout) was wrong. */}
         <Link
           to={`/subscriptions/${subscription.id}`}
-          className="flex-1 rounded-[14px] p-3.5 transition-all duration-500"
+          className="flex-1 rounded-[14px] p-3.5 transition-colors"
           style={{
-            background: `linear-gradient(135deg, rgba(${zone.mainVarRaw}, 0.07), rgba(${zone.mainVarRaw}, 0.02))`,
-            border: `1px solid rgba(${zone.mainVarRaw}, 0.09)`,
+            background: g.innerBg,
+            border: `1px solid ${g.innerBorder}`,
           }}
         >
           <div
-            className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider opacity-70 transition-colors duration-500"
-            style={{ color: zone.mainVar }}
+            className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider"
+            style={{ color: g.textFaint }}
           >
             {t('dashboard.tariff')}
           </div>
