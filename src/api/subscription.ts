@@ -131,7 +131,7 @@ export const subscriptionApi = {
   }> => {
     const response = await apiClient.put(
       '/cabinet/subscription/traffic',
-      ...bodyWithSubId({ gb }, subscriptionId),
+      ...bodyWithSubId({ gb, yandex_cid: getYandexCid() || undefined }, subscriptionId),
     );
     return response.data;
   },
@@ -357,7 +357,9 @@ export const subscriptionApi = {
   },
 
   activateTrial: async (): Promise<Subscription> => {
-    const response = await apiClient.post<Subscription>('/cabinet/subscription/trial');
+    const response = await apiClient.post<Subscription>('/cabinet/subscription/trial', {
+      yandex_cid: getYandexCid() || undefined,
+    });
     return response.data;
   },
 
@@ -471,7 +473,7 @@ export const subscriptionApi = {
   }> => {
     const response = await apiClient.post(
       '/cabinet/subscription/countries',
-      ...bodyWithSubId({ countries }, subscriptionId),
+      ...bodyWithSubId({ countries, yandex_cid: getYandexCid() || undefined }, subscriptionId),
     );
     return response.data;
   },
@@ -571,7 +573,10 @@ export const subscriptionApi = {
   }> => {
     const response = await apiClient.post(
       '/cabinet/subscription/tariff/switch',
-      ...bodyWithSubId({ tariff_id: tariffId, period_days: 30 }, subscriptionId),
+      ...bodyWithSubId(
+        { tariff_id: tariffId, period_days: 30, yandex_cid: getYandexCid() || undefined },
+        subscriptionId,
+      ),
     );
     return response.data;
   },
