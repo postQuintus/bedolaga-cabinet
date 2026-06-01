@@ -23,6 +23,19 @@ import {
   ServerIcon,
   ChartIcon,
   GlobeIcon,
+  HeartbeatIcon,
+  PowerIcon,
+  WarningCircleIcon,
+  CalendarIcon,
+  CalendarBlankIcon,
+  CalendarStarIcon,
+  ChartPieIcon,
+  ChartDonutIcon,
+  CpuIcon,
+  MemoryIcon,
+  PulseIcon,
+  DevicesIcon,
+  StatUptimeIcon,
   UsersIcon,
   SyncIcon,
   RefreshIcon,
@@ -36,7 +49,6 @@ import {
   BackIcon,
   ChevronRightIcon,
 } from '../components/icons';
-import { PiCpu, PiMemory, PiTimer, PiDevices, PiPulse } from 'react-icons/pi';
 
 const formatBytes = (bytes: number): string => {
   if (bytes === 0) return '0 B';
@@ -128,6 +140,9 @@ function NodeCard({ node, providerName, onAction, isLoading }: NodeCardProps) {
   const limit = node.traffic_limit_bytes ?? 0;
   const trafficPct = limit > 0 ? Math.min(100, (used / limit) * 100) : null;
 
+  // Provider name: realtime metrics first, fall back to the node's own provider.
+  const providerLabel = providerName || node.provider_name;
+
   return (
     <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-3.5 transition-colors hover:border-dark-600">
       {/* Identity + actions */}
@@ -145,9 +160,19 @@ function NodeCard({ node, providerName, onAction, isLoading }: NodeCardProps) {
             {getCountryFlag(node.country_code)}
           </span>
           <h3 className="truncate font-semibold text-dark-100">{node.name}</h3>
-          {providerName && (
-            <span className="shrink-0 truncate rounded-md bg-accent-500/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent-300">
-              {providerName}
+          {(providerLabel || node.provider_favicon) && (
+            <span className="flex min-w-0 max-w-[7rem] shrink items-center gap-1 rounded-md bg-accent-500/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent-300">
+              {node.provider_favicon && (
+                <img
+                  src={node.provider_favicon}
+                  alt=""
+                  className="h-3 w-3 shrink-0 rounded-[2px]"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              )}
+              {providerLabel && <span className="truncate">{providerLabel}</span>}
             </span>
           )}
         </div>
@@ -186,9 +211,9 @@ function NodeCard({ node, providerName, onAction, isLoading }: NodeCardProps) {
 
       {/* Address + traffic + uptime */}
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-dark-400">
-        <span className="flex items-center gap-1 font-mono text-dark-500">
-          <GlobeIcon className="h-3 w-3" />
-          {node.address}
+        <span className="flex min-w-0 max-w-full items-center gap-1 font-mono text-dark-500">
+          <GlobeIcon className="h-3 w-3 shrink-0" />
+          <span className="truncate">{node.address}</span>
         </span>
         <span className="flex items-center gap-1.5">
           <span className="text-dark-300">{formatBytes(used)}</span>
@@ -200,11 +225,11 @@ function NodeCard({ node, providerName, onAction, isLoading }: NodeCardProps) {
               />
             </span>
           )}
-          <span className="text-dark-500">{limit > 0 ? formatBytes(limit) : '∞'}</span>
+          <span className="text-dark-500">/ {limit > 0 ? formatBytes(limit) : '∞'}</span>
         </span>
         {node.xray_uptime > 0 && (
           <span className="flex items-center gap-1 text-dark-500">
-            <PiTimer className="h-3 w-3" />
+            <StatUptimeIcon className="h-3 w-3" />
             {formatUptime(node.xray_uptime)}
           </span>
         )}
@@ -246,7 +271,7 @@ function NodeCard({ node, providerName, onAction, isLoading }: NodeCardProps) {
             </span>
           </span>
           {(node.versions?.node || node.versions?.xray) && (
-            <span className="ml-auto flex items-center gap-2 text-dark-600">
+            <span className="flex w-full items-center gap-2 text-dark-600 sm:ml-auto sm:w-auto">
               {node.versions?.node && <span>{node.versions.node}</span>}
               {node.versions?.xray && <span>xray {node.versions.xray}</span>}
             </span>
@@ -527,20 +552,20 @@ function OverviewTab({
           <StatCard
             label={t('admin.remnawave.overview.cpu', 'CPU Cores')}
             value={stats.server_info.cpu_cores}
-            icon={<PiCpu className="h-5 w-5" />}
+            icon={<CpuIcon className="h-5 w-5" />}
             color="accent"
           />
           <StatCard
             label={t('admin.remnawave.overview.memory', 'Memory')}
             value={`${memoryUsedPercent}%`}
             subValue={`${formatBytes(stats.server_info.memory_used)} / ${formatBytes(stats.server_info.memory_total)}`}
-            icon={<PiMemory className="h-5 w-5" />}
+            icon={<MemoryIcon className="h-5 w-5" />}
             color={memoryUsedPercent > 80 ? 'red' : memoryUsedPercent > 60 ? 'orange' : 'green'}
           />
           <StatCard
             label={t('admin.remnawave.overview.uptime', 'Uptime')}
             value={formatUptime(stats.server_info.uptime_seconds)}
-            icon={<PiTimer className="h-5 w-5" />}
+            icon={<StatUptimeIcon className="h-5 w-5" />}
             color="blue"
           />
         </div>
@@ -556,31 +581,31 @@ function OverviewTab({
           <StatCard
             label={t('admin.remnawave.overview.traffic2days', '2 days')}
             value={formatBytes(stats.traffic_periods.last_2_days.current)}
-            icon={<ChartIcon className="h-5 w-5" />}
+            icon={<CalendarIcon className="h-5 w-5" />}
             color="accent"
           />
           <StatCard
             label={t('admin.remnawave.overview.traffic7days', '7 days')}
             value={formatBytes(stats.traffic_periods.last_7_days.current)}
-            icon={<ChartIcon className="h-5 w-5" />}
+            icon={<ChartDonutIcon className="h-5 w-5" />}
             color="blue"
           />
           <StatCard
             label={t('admin.remnawave.overview.traffic30days', '30 days')}
             value={formatBytes(stats.traffic_periods.last_30_days.current)}
-            icon={<ChartIcon className="h-5 w-5" />}
+            icon={<ChartPieIcon className="h-5 w-5" />}
             color="green"
           />
           <StatCard
             label={t('admin.remnawave.overview.trafficMonth', 'Month')}
             value={formatBytes(stats.traffic_periods.current_month.current)}
-            icon={<ChartIcon className="h-5 w-5" />}
+            icon={<CalendarBlankIcon className="h-5 w-5" />}
             color="purple"
           />
           <StatCard
             label={t('admin.remnawave.overview.trafficYear', 'Year')}
             value={formatBytes(stats.traffic_periods.current_year.current)}
-            icon={<ChartIcon className="h-5 w-5" />}
+            icon={<CalendarStarIcon className="h-5 w-5" />}
             color="orange"
           />
         </div>
@@ -650,7 +675,7 @@ function OverviewTab({
       {devicesStats && (devicesStats.by_platform.length > 0 || devicesStats.by_app.length > 0) && (
         <div>
           <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-dark-300">
-            <PiDevices className="h-4 w-4" />
+            <DevicesIcon className="h-4 w-4" />
             {t('admin.remnawave.overview.devices', 'Устройства')} ·{' '}
             {devicesStats.total_hwid_devices} ({devicesStats.average_devices_per_user.toFixed(1)}/
             {t('admin.remnawave.overview.perUser', 'юзер')})
@@ -717,7 +742,7 @@ function OverviewTab({
             <StatCard
               label={t('admin.remnawave.overview.panelRam', 'RAM процесса')}
               value={formatBytes(health.rss_bytes)}
-              icon={<PiMemory className="h-5 w-5" />}
+              icon={<MemoryIcon className="h-5 w-5" />}
               color="blue"
             />
             <StatCard
@@ -730,13 +755,13 @@ function OverviewTab({
             <StatCard
               label={t('admin.remnawave.overview.eventLoopP99', 'Event-loop p99')}
               value={`${health.event_loop_p99_ms.toFixed(1)} ms`}
-              icon={<PiPulse className="h-5 w-5" />}
+              icon={<PulseIcon className="h-5 w-5" />}
               color={health.event_loop_p99_ms > 50 ? 'red' : 'green'}
             />
             <StatCard
               label={t('admin.remnawave.overview.panelUptime', 'Аптайм панели')}
               value={formatUptime(health.uptime_seconds)}
-              icon={<PiTimer className="h-5 w-5" />}
+              icon={<StatUptimeIcon className="h-5 w-5" />}
               color="accent"
             />
           </div>
@@ -809,25 +834,25 @@ function NodesTab({
         <StatCard
           label={t('admin.remnawave.nodes.stats.total', 'Total')}
           value={stats.total}
-          icon={<GlobeIcon />}
+          icon={<ServerIcon />}
           color="accent"
         />
         <StatCard
           label={t('admin.remnawave.nodes.stats.online', 'Online')}
           value={stats.online}
-          icon={<GlobeIcon />}
+          icon={<HeartbeatIcon />}
           color="green"
         />
         <StatCard
           label={t('admin.remnawave.nodes.stats.offline', 'Offline')}
           value={stats.offline}
-          icon={<GlobeIcon />}
+          icon={<WarningCircleIcon />}
           color="red"
         />
         <StatCard
           label={t('admin.remnawave.nodes.stats.disabled', 'Disabled')}
           value={stats.disabled}
-          icon={<GlobeIcon />}
+          icon={<PowerIcon />}
           color="accent"
         />
         <StatCard

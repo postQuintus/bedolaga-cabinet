@@ -134,6 +134,8 @@ export interface NodeInfo {
   created_at?: string;
   updated_at?: string;
   provider_uuid?: string;
+  provider_name?: string | null;
+  provider_favicon?: string | null;
   versions?: { xray: string; node: string } | null;
   system?: {
     info: {
