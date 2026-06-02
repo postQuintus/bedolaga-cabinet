@@ -42,7 +42,10 @@ export function StatCard({
 
   return (
     <div className="rounded-xl bg-dark-800/30 p-3 transition-colors hover:bg-dark-800/50">
-      <div className="flex items-center gap-2.5">
+      <div className="truncate text-xs text-dark-500 sm:text-sm">{label}</div>
+      {/* Chip is centred against the value line only (delta sits below the whole
+          row), so the icon lands in the same spot on every card. */}
+      <div className="mt-1.5 flex items-center gap-2.5">
         {icon && (
           <span
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${toneStyle.chip}`}
@@ -50,16 +53,15 @@ export function StatCard({
             {icon}
           </span>
         )}
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-xs text-dark-500 sm:text-sm">{label}</div>
-          <div className={`truncate text-base font-semibold sm:text-lg ${valueClass}`}>{value}</div>
-          {trendStyle && (
-            <div className={`mt-0.5 text-xs font-medium ${trendStyle.className}`}>
-              {trendStyle.arrow} {Math.abs(delta!.percent)}%
-            </div>
-          )}
+        <div className={`min-w-0 flex-1 truncate text-lg font-semibold sm:text-xl ${valueClass}`}>
+          {value}
         </div>
       </div>
+      {trendStyle && (
+        <div className={`mt-1.5 text-xs font-medium ${trendStyle.className}`}>
+          {trendStyle.arrow} {Math.abs(delta!.percent)}%
+        </div>
+      )}
     </div>
   );
 }

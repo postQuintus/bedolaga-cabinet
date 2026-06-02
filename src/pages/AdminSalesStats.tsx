@@ -14,7 +14,7 @@ import {
   RepeatIcon,
   RocketIcon,
   SparklesIcon,
-  SubscriptionIcon,
+  TicketIcon,
   WalletIcon,
 } from '../components/icons';
 import { StatCard } from '../components/stats';
@@ -165,7 +165,7 @@ export default function AdminSalesStats() {
         <StatCard
           label={t('admin.salesStats.summary.activeSubs')}
           value={summaryLoading ? '...' : (summary?.active_subscriptions ?? 0)}
-          icon={<SubscriptionIcon className="h-5 w-5" />}
+          icon={<TicketIcon className="h-5 w-5" />}
           tone="accent"
         />
         <StatCard
