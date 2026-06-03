@@ -318,8 +318,9 @@ export default function AdminLandingStats() {
   }
 
   const landingTitle = landing ? resolveLocaleDisplay(landing.title) : `#${numericId}`;
+  const giftsClaimed = stats.total_gifts_claimed ?? 0;
   const giftClaimRate =
-    stats.total_gifts > 0 ? Math.round((stats.total_gifts_claimed / stats.total_gifts) * 100) : 0;
+    stats.total_gifts > 0 ? Math.round((giftsClaimed / stats.total_gifts) * 100) : 0;
 
   return (
     <div className="animate-fade-in">
@@ -455,7 +456,7 @@ export default function AdminLandingStats() {
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-2xl font-semibold text-dark-100">
-                  {stats.total_gifts_claimed}
+                  {giftsClaimed}
                   <span className="text-base text-dark-500"> / {stats.total_gifts}</span>
                 </div>
                 <div className="mt-0.5 text-xs text-dark-500">
