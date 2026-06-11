@@ -17,6 +17,7 @@ export type BackgroundType =
   | 'fireflies'
   | 'snowfall'
   | 'starfield'
+  | 'matrix-rain'
   | 'none';
 
 export interface AnimationConfig {

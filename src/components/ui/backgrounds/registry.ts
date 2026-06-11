@@ -21,6 +21,7 @@ const backgroundImports: Record<Exclude<BackgroundType, 'none'>, () => Promise<u
   fireflies: () => import('./fireflies'),
   snowfall: () => import('./snowfall'),
   starfield: () => import('./starfield'),
+  'matrix-rain': () => import('./matrix-rain'),
 };
 
 /** Prefetch the JS chunk for a background type (call early to avoid lazy-load delay) */
@@ -53,6 +54,7 @@ export const backgroundComponents: Record<
   fireflies: lazy(() => import('./fireflies')),
   snowfall: lazy(() => import('./snowfall')),
   starfield: lazy(() => import('./starfield')),
+  'matrix-rain': lazy(() => import('./matrix-rain')),
 };
 
 // Registry of all background definitions with settings for the editor
@@ -680,6 +682,44 @@ export const backgroundRegistry: BackgroundDefinition[] = [
         max: 5,
         step: 0.1,
         default: 1,
+      },
+    ],
+  },
+  {
+    type: 'matrix-rain',
+    labelKey: 'admin.backgrounds.matrixRain',
+    descriptionKey: 'admin.backgrounds.matrixRainDesc',
+    category: 'canvas',
+    settings: [
+      { key: 'color', label: 'admin.backgrounds.particleColor', type: 'color', default: '#00ff41' },
+      {
+        key: 'density',
+        label: 'admin.backgrounds.density',
+        type: 'number',
+        min: 10,
+        max: 100,
+        step: 5,
+        default: 70,
+      },
+      {
+        key: 'speed',
+        label: 'admin.backgrounds.speed',
+        type: 'number',
+        min: 0.2,
+        max: 3,
+        step: 0.1,
+        default: 1,
+      },
+      {
+        key: 'charset',
+        label: 'admin.backgrounds.charset',
+        type: 'select',
+        default: 'katakana',
+        options: [
+          { label: 'Katakana', value: 'katakana' },
+          { label: 'Latin', value: 'latin' },
+          { label: 'Binary', value: 'binary' },
+        ],
       },
     ],
   },
