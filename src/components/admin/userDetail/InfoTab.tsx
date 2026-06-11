@@ -514,8 +514,8 @@ export function InfoTab(props: InfoTabProps) {
             disabled={actionLoading}
             className={`rounded-lg px-3 py-2 text-sm font-medium transition-all disabled:opacity-50 ${
               confirmingAction === 'fullDelete'
-                ? 'bg-rose-500 text-white'
-                : 'bg-rose-500/15 text-rose-400 hover:bg-rose-500/25'
+                ? 'bg-error-500 text-white'
+                : 'bg-error-500/15 text-error-400 hover:bg-error-500/25'
             }`}
           >
             {confirmingAction === 'fullDelete'

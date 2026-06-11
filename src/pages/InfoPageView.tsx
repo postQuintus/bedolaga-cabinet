@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
-import { PiCaretDown } from 'react-icons/pi';
+import { ChevronDownIcon } from '@/components/icons';
 import { BackIcon, SearchIcon } from '@/components/icons';
 import { infoPagesApi } from '../api/infoPages';
 import { usePlatform } from '../platform/hooks/usePlatform';
@@ -160,7 +160,7 @@ function sanitizeHtml(html: string): string {
 
 // --- FAQ Accordion ---
 const ChevronIcon = ({ open }: { open: boolean }) => (
-  <PiCaretDown
+  <ChevronDownIcon
     className={`h-5 w-5 text-dark-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
   />
 );
@@ -391,7 +391,7 @@ export default function InfoPageView() {
       {/* Page header */}
       <div>
         {page.icon && <span className="mb-2 inline-block text-3xl">{page.icon}</span>}
-        <h1 className="text-2xl leading-tight font-extrabold text-dark-50 sm:text-3xl">
+        <h1 className="text-2xl leading-tight font-bold text-dark-50 sm:text-3xl">
           {resolvedTitle}
         </h1>
       </div>

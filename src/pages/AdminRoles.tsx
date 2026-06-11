@@ -74,7 +74,7 @@ export default function AdminRoles() {
             </button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.roles.title')}</h1>
+            <h1 className="text-xl font-bold text-dark-100">{t('admin.roles.title')}</h1>
             <p className="text-sm text-dark-400">{t('admin.roles.subtitle')}</p>
           </div>
         </div>

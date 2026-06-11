@@ -72,9 +72,7 @@ export default function AdminWithdrawalDetail() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/withdrawals" />
-          <h1 className="text-xl font-semibold text-dark-100">
-            {t('admin.withdrawals.detail.title')}
-          </h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.withdrawals.detail.title')}</h1>
         </div>
         <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
           <p className="text-error-400">{t('admin.withdrawals.detail.loadError')}</p>
@@ -106,7 +104,7 @@ export default function AdminWithdrawalDetail() {
         <div className="flex items-center gap-3">
           <AdminBackButton to="/admin/withdrawals" />
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">
+            <h1 className="text-xl font-bold text-dark-100">
               {t('admin.withdrawals.detail.title')} #{detail.id}
             </h1>
             <div className="mt-1 flex items-center gap-2">

@@ -10,13 +10,13 @@ import { Card } from '@/components/data-display/Card/Card';
 import { Button } from '@/components/primitives/Button/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
-import { PiCaretDown } from 'react-icons/pi';
+import { ChevronDownIcon } from '@/components/icons';
 import { StarIcon, CalendarIcon, HistoryIcon, CloseIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 // Icons
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
-  <PiCaretDown
+  <ChevronDownIcon
     className={cn('h-5 w-5 transition-transform duration-200', expanded && 'rotate-180')}
   />
 );
@@ -488,7 +488,7 @@ export default function Wheel() {
           <span className="text-5xl">🎡</span>
         </div>
         <div className="text-center">
-          <h1 className="mb-2 text-2xl font-bold text-dark-100">{t('wheel.title')}</h1>
+          <h1 className="mb-2 text-2xl font-bold text-dark-50">{t('wheel.title')}</h1>
           <p className="text-dark-400">{t('wheel.disabled')}</p>
         </div>
       </div>

@@ -170,7 +170,7 @@ export default function AdminPaymentMethodEdit() {
               <BackIcon />
             </button>
           )}
-          <h1 className="text-2xl font-bold text-dark-50">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.paymentMethods.notFound', 'Payment method not found')}
           </h1>
         </div>
@@ -194,7 +194,7 @@ export default function AdminPaymentMethodEdit() {
           </button>
         )}
         <div>
-          <h1 className="text-2xl font-bold text-dark-50">{displayName}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{displayName}</h1>
           <p className="text-sm text-dark-500">
             {METHOD_LABELS[config.method_id] || config.method_id}
           </p>

@@ -49,7 +49,7 @@ export default function AdminApps() {
             <BackIcon className="h-5 w-5 text-dark-400" />
           </button>
         )}
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('admin.apps.title')}</h1>
+        <h1 className="text-xl font-bold text-dark-100">{t('admin.apps.title')}</h1>
       </div>
 
       {/* Status card */}

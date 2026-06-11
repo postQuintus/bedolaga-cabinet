@@ -95,7 +95,7 @@ export default function AdminPartnerSettings() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/partners" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partners.settings')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.partners.settings')}</h1>
         </div>
         <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
           <p className="text-error-400">{t('admin.partners.settingsLoadError')}</p>
@@ -119,7 +119,7 @@ export default function AdminPartnerSettings() {
           <SettingsIcon className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partners.settings')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.partners.settings')}</h1>
           <p className="text-sm text-dark-400">{t('admin.partners.settingsSubtitle')}</p>
         </div>
       </div>

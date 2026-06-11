@@ -67,7 +67,7 @@ export default function ResetPassword() {
         <div className="relative w-full max-w-md text-center">
           <div className="card">
             <div className="mb-4 text-5xl text-error-400">!</div>
-            <h2 className="mb-2 text-xl font-semibold text-dark-50">
+            <h2 className="mb-2 text-lg font-semibold text-dark-50">
               {t('resetPassword.invalidToken', 'Invalid reset link')}
             </h2>
             <p className="mb-6 text-dark-400">
@@ -100,7 +100,7 @@ export default function ResetPassword() {
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-success-500/20">
                 <CheckIcon className="h-8 w-8 text-success-400" />
               </div>
-              <h2 className="mb-2 text-xl font-bold text-dark-50">
+              <h2 className="mb-2 text-lg font-semibold text-dark-50">
                 {t('resetPassword.success', 'Password changed!')}
               </h2>
               <p className="mb-4 text-dark-400">
@@ -110,7 +110,7 @@ export default function ResetPassword() {
             </div>
           ) : (
             <>
-              <h2 className="mb-2 text-center text-xl font-bold text-dark-50">
+              <h2 className="mb-2 text-center text-lg font-semibold text-dark-50">
                 {t('resetPassword.title', 'Set new password')}
               </h2>
               <p className="mb-6 text-center text-dark-400">

@@ -46,7 +46,7 @@ export default function AdminPartnerCommission() {
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={`/admin/partners/${userId}`} />
-        <h1 className="text-xl font-semibold text-dark-100">
+        <h1 className="text-xl font-bold text-dark-100">
           {t('admin.partnerDetail.commissionDialog.title')}
         </h1>
       </div>

@@ -43,7 +43,7 @@ export default function AdminWithdrawalReject() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={`/admin/withdrawals/${id}`} />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.withdrawals.detail.rejectTitle')}
           </h1>
           {passedDetail?.amountKopeks != null && passedDetail.amountKopeks > 0 && (

@@ -51,7 +51,7 @@ export default function AdminPartners() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to="/admin" />
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partners.title')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.partners.title')}</h1>
           <p className="text-sm text-dark-400">{t('admin.partners.subtitle')}</p>
         </div>
         <button

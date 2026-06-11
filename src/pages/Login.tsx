@@ -376,7 +376,7 @@ export default function Login() {
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-success-500/20">
               <EmailIcon className="h-7 w-7 text-success-400" />
             </div>
-            <h2 className="mb-2 text-lg font-bold text-dark-50">
+            <h2 className="mb-2 text-lg font-semibold text-dark-50">
               {t('auth.checkEmail', 'Check your email')}
             </h2>
             <p className="mb-3 text-sm text-dark-400">

@@ -403,7 +403,7 @@ export default function AdminLandings() {
             </button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.landings.title')}</h1>
+            <h1 className="text-xl font-bold text-dark-100">{t('admin.landings.title')}</h1>
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -282,7 +282,7 @@ export default function AdminSettings() {
 
           {/* Title + count badges */}
           <div className="mb-4 flex items-center gap-3">
-            <h2 className="truncate text-xl font-semibold text-dark-100">{sectionTitle}</h2>
+            <h2 className="truncate text-lg font-semibold text-dark-100">{sectionTitle}</h2>
             {totalCount > 0 && !searchQuery.trim() && activeTreeInfo && (
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-dark-700/50 px-2 py-0.5 text-xs text-dark-400">

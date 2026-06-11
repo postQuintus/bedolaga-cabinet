@@ -379,7 +379,7 @@ export default function AdminBanSystem() {
             </div>
 
             {/* Title */}
-            <h2 className="mb-2 text-xl font-bold text-dark-100">{t('banSystem.title')}</h2>
+            <h2 className="mb-2 text-lg font-semibold text-dark-100">{t('banSystem.title')}</h2>
 
             {/* Error message */}
             <p className="mb-2 font-medium text-error-400">{error}</p>
@@ -433,7 +433,7 @@ export default function AdminBanSystem() {
             <ShieldIcon className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-dark-100">{t('banSystem.title')}</h1>
+            <h1 className="text-xl font-bold text-dark-100">{t('banSystem.title')}</h1>
             <p className="text-dark-400">{t('banSystem.subtitle')}</p>
           </div>
         </div>

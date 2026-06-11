@@ -226,7 +226,7 @@ export default function Referral() {
           <UsersIcon className="h-12 w-12 text-dark-500" />
         </div>
         <div className="text-center">
-          <h1 className="mb-2 text-2xl font-bold text-dark-100">{t('referral.title')}</h1>
+          <h1 className="mb-2 text-2xl font-bold text-dark-50">{t('referral.title')}</h1>
           <p className="text-dark-400">{t('referral.disabled')}</p>
         </div>
       </div>

@@ -149,9 +149,7 @@ export default function AdminSalesStats() {
       <div className="flex items-center gap-3">
         <AdminBackButton />
         <div>
-          <h1 className="text-xl font-bold text-dark-100 sm:text-2xl">
-            {t('admin.salesStats.title')}
-          </h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.salesStats.title')}</h1>
           <p className="text-sm text-dark-400">{t('admin.salesStats.subtitle')}</p>
         </div>
       </div>

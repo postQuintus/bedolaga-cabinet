@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { PiCaretDown } from 'react-icons/pi';
+import { ChevronDownIcon } from '@/components/icons';
 import {
   GripIcon,
   TrashIcon,
@@ -41,7 +41,7 @@ import { useNotify } from '../../platform/hooks/useNotify';
 import { useNativeDialog } from '../../platform/hooks/useNativeDialog';
 
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
-  <PiCaretDown className={`h-3.5 w-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+  <ChevronDownIcon className={`h-3.5 w-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`} />
 );
 
 function generateId(): string {

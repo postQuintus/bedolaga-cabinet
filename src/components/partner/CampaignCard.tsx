@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiCaretDown } from 'react-icons/pi';
+import { ChevronDownIcon } from '@/components/icons';
 
 import { CheckIcon, CopyIcon } from '@/components/icons';
 import type { PartnerCampaignInfo } from '../../api/partners';
@@ -12,7 +12,7 @@ import { CampaignDetailStats } from './CampaignDetailStats';
 import { StatCard } from '../stats/StatCard';
 
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
-  <PiCaretDown className={`h-5 w-5 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+  <ChevronDownIcon className={`h-5 w-5 transition-transform ${expanded ? 'rotate-180' : ''}`} />
 );
 
 interface CampaignCardProps {

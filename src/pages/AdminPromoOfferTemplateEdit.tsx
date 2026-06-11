@@ -109,7 +109,7 @@ export default function AdminPromoOfferTemplateEdit() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/promo-offers" />
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.promoOffers.form.editTemplate')}
           </h1>
         </div>
@@ -127,7 +127,7 @@ export default function AdminPromoOfferTemplateEdit() {
         <AdminBackButton to="/admin/promo-offers" />
         <div className="flex items-center gap-3">
           <span className="text-2xl">{getOfferTypeIcon(template.offer_type)}</span>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.promoOffers.form.editTemplate')}
           </h1>
         </div>

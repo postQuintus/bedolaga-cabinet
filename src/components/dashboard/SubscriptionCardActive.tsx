@@ -116,7 +116,7 @@ export default function SubscriptionCardActive({
           </div>
 
           {/* Title */}
-          <h2 className="text-lg font-bold tracking-tight text-dark-50">
+          <h2 className="text-lg font-semibold tracking-tight text-dark-50">
             {t('dashboard.trafficUsageTitle')}
           </h2>
         </div>

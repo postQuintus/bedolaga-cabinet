@@ -315,7 +315,7 @@ export default function AdminCampaignEdit() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/campaigns" />
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.campaigns.modal.editTitle')}
           </h1>
         </div>

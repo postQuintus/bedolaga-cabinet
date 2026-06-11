@@ -6,7 +6,7 @@
 // thin local wrapper over the panel's Phosphor caret icons.
 // ──────────────────────────────────────────────────────────────────
 
-import { PiCaretDown, PiCaretUpDown, PiCaretUp } from 'react-icons/pi';
+import { ChevronDownIcon, ChevronExpandIcon, ChevronUpIcon } from '@/components/icons';
 
 export {
   CalendarIcon,
@@ -27,9 +27,9 @@ export {
 
 export const SortIcon = ({ direction }: { direction: false | 'asc' | 'desc' }) =>
   direction === 'asc' ? (
-    <PiCaretUp className="ml-1 inline h-3 w-3" />
+    <ChevronUpIcon className="ml-1 inline h-3 w-3" />
   ) : direction === 'desc' ? (
-    <PiCaretDown className="ml-1 inline h-3 w-3" />
+    <ChevronDownIcon className="ml-1 inline h-3 w-3" />
   ) : (
-    <PiCaretUpDown className="ml-1 inline h-3 w-3" />
+    <ChevronExpandIcon className="ml-1 inline h-3 w-3" />
   );

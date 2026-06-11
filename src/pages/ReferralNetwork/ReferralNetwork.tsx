@@ -54,7 +54,7 @@ export function ReferralNetwork() {
         <div className="flex flex-col gap-1.5 px-3 py-2 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3">
           <div className="flex items-center gap-2">
             <AdminBackButton />
-            <h1 className="shrink-0 text-sm font-bold text-dark-100 sm:text-base">
+            <h1 className="shrink-0 text-base font-bold text-dark-50 sm:text-lg">
               {t('admin.referralNetwork.title')}
             </h1>
           </div>

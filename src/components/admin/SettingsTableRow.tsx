@@ -87,7 +87,7 @@ export function SettingsTableRow({
             )}
 
             {setting.has_override && !locked && (
-              <span className="rounded-full bg-sky-500/20 px-1.5 py-0.5 text-[10px] leading-none font-medium text-sky-400">
+              <span className="rounded-full bg-accent-500/20 px-1.5 py-0.5 text-[10px] leading-none font-medium text-accent-400">
                 {t('admin.settings.badgeDb')}
               </span>
             )}

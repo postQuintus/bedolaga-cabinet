@@ -80,7 +80,7 @@ export default function AdminServerEdit() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/servers" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.servers.edit')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.servers.edit')}</h1>
         </div>
         <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
           <p className="text-error-400">{t('admin.servers.loadError')}</p>
@@ -107,7 +107,7 @@ export default function AdminServerEdit() {
           </div>
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.servers.edit')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.servers.edit')}</h1>
           <p className="text-sm text-dark-400">
             <Twemoji options={{ className: 'twemoji', folder: 'svg', ext: '.svg' }}>
               {server.display_name}

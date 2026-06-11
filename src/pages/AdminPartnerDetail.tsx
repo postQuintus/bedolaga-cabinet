@@ -85,7 +85,7 @@ export default function AdminPartnerDetail() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/partners" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partnerDetail.title')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.partnerDetail.title')}</h1>
         </div>
         <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
           <p className="text-error-400">{t('admin.partnerDetail.loadError')}</p>
@@ -109,7 +109,7 @@ export default function AdminPartnerDetail() {
         <AdminBackButton to="/admin/partners" />
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold text-dark-100">
+            <h1 className="text-xl font-bold text-dark-100">
               {partner.first_name || partner.username || `#${partner.user_id}`}
             </h1>
             <span className={`rounded px-2 py-0.5 text-xs ${badge.bgColor} ${badge.color}`}>

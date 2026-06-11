@@ -177,7 +177,7 @@ export default function SubscriptionCardExpired({
             <ClockIcon className="h-[22px] w-[22px]" />
           )}
         </div>
-        <h2 className="text-lg font-bold tracking-tight text-dark-50">
+        <h2 className="text-lg font-semibold tracking-tight text-dark-50">
           {isLimited
             ? t('subscription.trafficLimitedTitle')
             : isDisabledDaily

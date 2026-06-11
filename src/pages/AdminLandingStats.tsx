@@ -147,7 +147,7 @@ function PurchaseCard({ item, formatPrice, lang, t }: PurchaseCardProps) {
         {/* Gift badge */}
         {item.is_gift && (
           <div className="shrink-0">
-            <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
+            <span className="inline-flex items-center gap-1 rounded-md bg-accent-500/20 px-1.5 py-0.5 text-xs text-accent-400">
               <GiftIcon className="h-3.5 w-3.5" />
               {t('admin.landings.purchases.gift')}
             </span>
@@ -302,7 +302,7 @@ export default function AdminLandingStats() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/landings" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.landings.stats.title')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.landings.stats.title')}</h1>
         </div>
         <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
           <p className="text-error-400">{t('admin.landings.stats.loadError')}</p>
@@ -332,7 +332,7 @@ export default function AdminLandingStats() {
             <ChartIcon className="h-6 w-6" />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-semibold text-dark-100">{landingTitle}</h1>
+            <h1 className="truncate text-xl font-bold text-dark-100">{landingTitle}</h1>
             <div className="mt-1 flex items-center gap-2">
               {landing?.is_active ? (
                 <span className="rounded bg-success-500/20 px-2 py-0.5 text-xs text-success-400">

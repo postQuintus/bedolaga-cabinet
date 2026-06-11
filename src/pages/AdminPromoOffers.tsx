@@ -87,7 +87,7 @@ export default function AdminPromoOffers() {
             </button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.promoOffers.title')}</h1>
+            <h1 className="text-xl font-bold text-dark-100">{t('admin.promoOffers.title')}</h1>
             <p className="text-sm text-dark-400">{t('admin.promoOffers.subtitle')}</p>
           </div>
         </div>

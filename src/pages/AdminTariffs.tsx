@@ -104,7 +104,7 @@ function SortableTariffCard({
                   </span>
                 )}
                 {tariff.show_in_gift && (
-                  <span className="inline-flex items-center gap-1 rounded bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
+                  <span className="inline-flex items-center gap-1 rounded bg-accent-500/20 px-2 py-0.5 text-xs text-accent-400">
                     <GiftIcon className="h-3 w-3" />
                     {t('admin.tariffs.giftBadge')}
                   </span>

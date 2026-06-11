@@ -117,19 +117,19 @@ export default function SuccessNotificationModal() {
     } else if (data.type === 'subscription_activated') {
       title = t('successNotification.subscriptionActivated.title', 'Subscription activated!');
       icon = <RocketIcon className="h-8 w-8" />;
-      gradientClass = 'from-accent-500 to-purple-600';
+      gradientClass = 'from-accent-500 to-accent-600';
     } else if (data.type === 'subscription_renewed') {
       title = t('successNotification.subscriptionRenewed.title', 'Subscription renewed!');
       icon = <RocketIcon className="h-8 w-8" />;
-      gradientClass = 'from-accent-500 to-purple-600';
+      gradientClass = 'from-accent-500 to-accent-600';
     } else if (data.type === 'subscription_purchased') {
       title = t('successNotification.subscriptionPurchased.title', 'Subscription purchased!');
       icon = <RocketIcon className="h-8 w-8" />;
-      gradientClass = 'from-accent-500 to-purple-600';
+      gradientClass = 'from-accent-500 to-accent-600';
     } else if (data.type === 'devices_purchased') {
       title = t('successNotification.devicesPurchased.title', 'Devices added!');
       icon = <DevicesIcon className="h-8 w-8" />;
-      gradientClass = 'from-blue-500 to-cyan-600';
+      gradientClass = 'from-accent-500 to-accent-600';
     } else if (data.type === 'traffic_purchased') {
       title = t('successNotification.trafficPurchased.title', 'Traffic added!');
       icon = <TrafficIcon className="h-8 w-8" />;
@@ -212,7 +212,7 @@ export default function SuccessNotificationModal() {
               <span className="text-dark-400">
                 {t('successNotification.devicesAdded', 'Devices added')}
               </span>
-              <span className="text-lg font-bold text-blue-400">+{data.devicesAdded}</span>
+              <span className="text-lg font-bold text-accent-400">+{data.devicesAdded}</span>
             </div>
           )}
 

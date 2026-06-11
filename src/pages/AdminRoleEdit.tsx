@@ -364,7 +364,7 @@ export default function AdminRoleEdit() {
       <div className="flex items-center gap-3">
         <AdminBackButton to="/admin/roles" />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {isEdit ? t('admin.roles.modal.editTitle') : t('admin.roles.modal.createTitle')}
           </h1>
         </div>

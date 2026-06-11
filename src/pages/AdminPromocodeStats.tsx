@@ -32,7 +32,7 @@ const getTypeColor = (type: PromoCodeType): string => {
     subscription_days: 'bg-accent-500/20 text-accent-400',
     trial_subscription: 'bg-accent-500/20 text-accent-400',
     promo_group: 'bg-warning-500/20 text-warning-400',
-    discount: 'bg-pink-500/20 text-pink-400',
+    discount: 'bg-error-500/20 text-error-400',
   };
   return colors[type] || 'bg-dark-600 text-dark-300';
 };
@@ -89,9 +89,7 @@ export default function AdminPromocodeStats() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/promocodes" />
-          <h1 className="text-xl font-semibold text-dark-100">
-            {t('admin.promocodes.stats.title')}
-          </h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.promocodes.stats.title')}</h1>
         </div>
         <div className="py-12 text-center">
           <p className="text-error-400">{t('admin.promocodes.stats.notFound')}</p>
@@ -183,11 +181,11 @@ export default function AdminPromocodeStats() {
                   <span className="text-dark-400">
                     {t('admin.promocodes.stats.discountLabel')}:
                   </span>
-                  <span className="text-pink-400">-{promocode.balance_bonus_kopeks}%</span>
+                  <span className="text-error-400">-{promocode.balance_bonus_kopeks}%</span>
                 </div>
                 <div className="flex justify-between rounded-lg bg-dark-700/50 p-3">
                   <span className="text-dark-400">{t('admin.promocodes.stats.validFor')}:</span>
-                  <span className="text-pink-400">
+                  <span className="text-error-400">
                     {t('admin.promocodes.stats.hoursValue', {
                       count: promocode.subscription_days,
                     })}

@@ -507,7 +507,7 @@ export default function Subscription() {
     return (
       <div className="mx-auto max-w-lg p-4 text-center">
         <div className="mb-4 text-4xl">😕</div>
-        <h2 className="mb-2 text-xl font-bold text-dark-50">
+        <h2 className="mb-2 text-lg font-semibold text-dark-50">
           {t('subscription.notFound', 'Подписка не найдена')}
         </h2>
         <p className="mb-4 text-sm text-dark-50/60">
@@ -592,7 +592,7 @@ export default function Subscription() {
                   </div>
 
                   {/* Plan name */}
-                  <h2 className="text-lg font-bold tracking-tight text-dark-50">
+                  <h2 className="text-lg font-semibold tracking-tight text-dark-50">
                     {subscription.tariff_name || t('subscription.currentPlan')}
                   </h2>
                 </div>

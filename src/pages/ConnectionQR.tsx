@@ -42,7 +42,7 @@ export default function ConnectionQR() {
     <div className="animate-fade-in">
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={connectionPath} replace />
-        <h1 className="text-2xl font-bold text-dark-100">{t('subscription.connection.qrTitle')}</h1>
+        <h1 className="text-2xl font-bold text-dark-50">{t('subscription.connection.qrTitle')}</h1>
       </div>
 
       <div className="flex flex-col items-center">

@@ -268,7 +268,7 @@ export default function Support() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
             <ChatIcon className="h-8 w-8 text-dark-400" />
           </div>
-          <h2 className="mb-2 text-xl font-semibold text-dark-100">{supportMessage.title}</h2>
+          <h2 className="mb-2 text-lg font-semibold text-dark-100">{supportMessage.title}</h2>
           <p className="mb-6 text-dark-400">{supportMessage.message}</p>
           <Button onClick={supportMessage.buttonAction} fullWidth>
             {supportMessage.buttonText}

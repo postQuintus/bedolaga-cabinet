@@ -50,7 +50,7 @@ export default function AdminPartnerCampaignAssign() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={`/admin/partners/${userId}`} />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.partnerDetail.campaigns.assignTitle')}
           </h1>
           {partnerName && <p className="text-sm text-dark-400">{partnerName}</p>}
@@ -118,7 +118,7 @@ export default function AdminPartnerCampaignAssign() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-dark-300">{campaign.name}</span>
-                    <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
+                    <span className="rounded bg-accent-500/20 px-1.5 py-0.5 text-xs text-accent-400">
                       {campaign.partner_name}
                     </span>
                   </div>

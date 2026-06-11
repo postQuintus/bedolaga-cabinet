@@ -523,7 +523,7 @@ export default function AdminEmailTemplates() {
             <MailIcon className="h-6 w-6" />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-bold text-dark-100 sm:text-xl">
+            <h1 className="truncate text-xl font-bold text-dark-100 sm:text-xl">
               {t('admin.emailTemplates.title')}
             </h1>
             <p className="truncate text-xs text-dark-400">

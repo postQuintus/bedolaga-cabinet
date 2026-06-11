@@ -346,7 +346,7 @@ export default function NewsArticlePage() {
         </div>
 
         {/* Title */}
-        <h1 className="mb-4 text-2xl leading-tight font-extrabold text-dark-50 sm:text-3xl">
+        <h1 className="mb-4 text-2xl leading-tight font-bold text-dark-50 sm:text-3xl">
           {article.title}
         </h1>
 

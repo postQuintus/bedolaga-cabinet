@@ -692,7 +692,7 @@ export default function AdminPanel() {
 
         {/* Hero + Search */}
         <div className="flex shrink-0 flex-wrap items-center gap-3">
-          <h1 className="text-lg font-bold tracking-tight text-dark-50 sm:text-xl light:text-champagne-900">
+          <h1 className="text-xl font-bold tracking-tight text-dark-100 sm:text-xl light:text-champagne-900">
             {t('admin.panel.title')}
           </h1>
           <div className="flex items-center gap-1.5 text-xs text-dark-400 light:text-champagne-500">

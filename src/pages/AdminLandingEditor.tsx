@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { PiCaretDown } from 'react-icons/pi';
+import { ChevronDownIcon as ChevronDownGlyph } from '@/components/icons';
 import { useNavigate, useParams } from 'react-router';
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +53,7 @@ function isoToDatetimeLocal(iso: string): string {
 }
 
 const ChevronDownIcon = ({ open }: { open: boolean }) => (
-  <PiCaretDown className={cn('h-5 w-5 transition-transform', open && 'rotate-180')} />
+  <ChevronDownGlyph className={cn('h-5 w-5 transition-transform', open && 'rotate-180')} />
 );
 
 // ============ Collapsible Section ============
@@ -574,7 +574,7 @@ export default function AdminLandingEditor() {
               <BackIcon />
             </button>
           )}
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {isEdit ? t('admin.landings.edit') : t('admin.landings.create')}
           </h1>
         </div>

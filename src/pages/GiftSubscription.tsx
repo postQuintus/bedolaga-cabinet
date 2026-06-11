@@ -774,7 +774,7 @@ function ActivateTabContent({ initialCode }: { initialCode?: string | null }) {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/20">
           <CheckCircleIcon className="h-8 w-8 text-accent-400" />
         </div>
-        <h2 className="text-xl font-bold text-dark-50">{t('gift.activateSuccess')}</h2>
+        <h2 className="text-lg font-semibold text-dark-50">{t('gift.activateSuccess')}</h2>
         <p className="text-sm text-dark-300">
           {t('gift.activateSuccessDesc', {
             tariff: result.tariff_name ?? '',
@@ -792,7 +792,7 @@ function ActivateTabContent({ initialCode }: { initialCode?: string | null }) {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/20">
           <KeyIcon className="h-8 w-8 text-accent-400" />
         </div>
-        <h2 className="text-xl font-bold text-dark-50">{t('gift.activateTitle')}</h2>
+        <h2 className="text-lg font-semibold text-dark-50">{t('gift.activateTitle')}</h2>
         <p className="max-w-xs text-sm text-dark-400">{t('gift.activateDescription')}</p>
       </div>
 

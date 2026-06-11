@@ -85,7 +85,7 @@ export default function Contests() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">{selectedContest.name}</h2>
+              <h2 className="text-lg font-semibold">{selectedContest.name}</h2>
               <button onClick={handleCloseGame} className="text-dark-400 hover:text-dark-200">
                 <XIcon className="h-6 w-6" />
               </button>

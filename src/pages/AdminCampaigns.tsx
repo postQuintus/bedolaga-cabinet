@@ -130,7 +130,7 @@ export default function AdminCampaigns() {
             </button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.campaigns.title')}</h1>
+            <h1 className="text-xl font-bold text-dark-100">{t('admin.campaigns.title')}</h1>
             <p className="text-sm text-dark-400">{t('admin.campaigns.subtitle')}</p>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function AdminCampaigns() {
                       {t(bonusTypeConfig[campaign.bonus_type].labelKey)}
                     </span>
                     {campaign.partner_name && (
-                      <span className="rounded bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
+                      <span className="rounded bg-accent-500/20 px-2 py-0.5 text-xs text-accent-400">
                         {campaign.partner_name}
                       </span>
                     )}

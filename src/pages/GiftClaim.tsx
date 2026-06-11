@@ -111,7 +111,7 @@ export default function GiftClaim() {
     return (
       <Shell>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <h1 className="text-lg font-semibold text-dark-50">
+          <h1 className="text-2xl font-bold text-dark-50">
             {t('landing.giftClaim.notFoundTitle', 'Gift not found')}
           </h1>
           <p className="text-sm text-dark-400">
@@ -147,7 +147,7 @@ export default function GiftClaim() {
     return (
       <Shell>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <h1 className="text-lg font-semibold text-dark-50">
+          <h1 className="text-2xl font-bold text-dark-50">
             {t('landing.giftClaim.failedTitle', 'Gift unavailable')}
           </h1>
           <p className="text-sm text-dark-400">
@@ -210,7 +210,7 @@ export default function GiftClaim() {
       <Shell>
         <div className="flex flex-col items-center gap-4 py-6 text-center">
           <Spinner className="h-12 w-12 border-[3px]" />
-          <h1 className="text-lg font-semibold text-dark-50">
+          <h1 className="text-2xl font-bold text-dark-50">
             {t('landing.giftClaim.pendingTitle', 'Almost ready...')}
           </h1>
           <p className="text-sm text-dark-400">

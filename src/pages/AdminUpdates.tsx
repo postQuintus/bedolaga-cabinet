@@ -131,7 +131,7 @@ function ReleaseCard({ release }: { release: ReleaseItem }) {
           <span className="text-sm text-dark-400">{release.name}</span>
         )}
         {release.prerelease && (
-          <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-[10px] font-medium text-violet-400">
+          <span className="rounded-full bg-accent-500/20 px-2 py-0.5 text-[10px] font-medium text-accent-400">
             {t('adminUpdates.prerelease')}
           </span>
         )}

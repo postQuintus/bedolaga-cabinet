@@ -226,9 +226,7 @@ export default function AdminPromoOfferSend() {
           <div className="rounded-lg bg-accent-500/20 p-2">
             <SendIcon />
           </div>
-          <h1 className="text-xl font-semibold text-dark-100">
-            {t('admin.promoOffers.send.title')}
-          </h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.promoOffers.send.title')}</h1>
         </div>
       </div>
 

@@ -53,7 +53,7 @@ export default function AdminApplicationReview() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/partners" />
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.partners.approveDialog.title')}
           </h1>
         </div>
@@ -72,9 +72,7 @@ export default function AdminApplicationReview() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to="/admin/partners" />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
-            {t('admin.partners.actions.review')}
-          </h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.partners.actions.review')}</h1>
           <p className="text-sm text-dark-400">{displayName}</p>
         </div>
       </div>

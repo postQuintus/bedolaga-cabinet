@@ -1549,7 +1549,7 @@ export default function AdminRemnawave() {
             <RemnawaveIcon className="h-6 w-6 text-accent-400" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">
+            <h1 className="text-xl font-bold text-dark-100">
               {t('admin.remnawave.title', 'Remnawave')}
             </h1>
             <p className="text-sm text-dark-400">

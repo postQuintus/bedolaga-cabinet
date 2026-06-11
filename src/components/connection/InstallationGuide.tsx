@@ -222,7 +222,7 @@ export default function InstallationGuide({
             <BackIcon className="h-6 w-6" />
           </button>
         )}
-        <h2 className="flex-1 text-lg font-bold text-dark-100">
+        <h2 className="flex-1 text-lg font-semibold text-dark-100">
           {getBaseTranslation('installationGuideHeader', 'subscription.connection.title')}
         </h2>
         {appConfig.subscriptionUrl && onOpenQR && (

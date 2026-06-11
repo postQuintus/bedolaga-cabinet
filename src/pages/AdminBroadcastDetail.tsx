@@ -31,7 +31,7 @@ function ChannelBadge({ channel }: { channel?: BroadcastChannel }) {
 
   if (channel === 'email') {
     return (
-      <span className="flex items-center gap-1 rounded-full bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
+      <span className="flex items-center gap-1 rounded-full bg-accent-500/20 px-2 py-0.5 text-xs text-accent-400">
         <EmailIcon />
         <span className="hidden sm:inline">Email</span>
       </span>

@@ -221,7 +221,7 @@ export default function AdminPolicies() {
             </button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.policies.title')}</h1>
+            <h1 className="text-xl font-bold text-dark-100">{t('admin.policies.title')}</h1>
             <p className="text-sm text-dark-400">{t('admin.policies.subtitle')}</p>
           </div>
         </div>

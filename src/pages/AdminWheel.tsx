@@ -393,7 +393,7 @@ export default function AdminWheel() {
               <BackIcon />
             </button>
           )}
-          <h1 className="text-xl font-bold text-dark-50 sm:text-2xl">{t('admin.wheel.title')}</h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.wheel.title')}</h1>
         </div>
         <div className="flex items-center gap-2">
           <span

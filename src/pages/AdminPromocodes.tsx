@@ -39,7 +39,7 @@ const getTypeColor = (type: PromoCodeType): string => {
     subscription_days: 'bg-accent-500/20 text-accent-400',
     trial_subscription: 'bg-accent-500/20 text-accent-400',
     promo_group: 'bg-warning-500/20 text-warning-400',
-    discount: 'bg-pink-500/20 text-pink-400',
+    discount: 'bg-error-500/20 text-error-400',
   };
   return colors[type] || 'bg-dark-600 text-dark-300';
 };
@@ -206,7 +206,7 @@ export default function AdminPromocodes() {
                       </span>
                     )}
                     {promo.type === 'discount' && (
-                      <span className="text-pink-400">
+                      <span className="text-error-400">
                         {t('admin.promocodes.discountForHours', {
                           percent: promo.balance_bonus_kopeks,
                           hours: promo.subscription_days,

@@ -29,8 +29,8 @@ const bonusTypeConfig: Record<
   },
   tariff: {
     labelKey: 'admin.campaigns.bonusType.tariff',
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-500/20',
+    color: 'text-accent-400',
+    bgColor: 'bg-accent-500/20',
   },
   none: {
     labelKey: 'admin.campaigns.bonusType.none',
@@ -141,9 +141,7 @@ export default function AdminCampaignStats() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/campaigns" />
-          <h1 className="text-xl font-semibold text-dark-100">
-            {t('admin.campaigns.stats.title')}
-          </h1>
+          <h1 className="text-xl font-bold text-dark-100">{t('admin.campaigns.stats.title')}</h1>
         </div>
         <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
           <p className="text-error-400">{t('admin.campaigns.stats.loadError')}</p>
@@ -168,7 +166,7 @@ export default function AdminCampaignStats() {
             <ChartIcon className="h-6 w-6" />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-semibold text-dark-100">{stats.name}</h1>
+            <h1 className="truncate text-xl font-bold text-dark-100">{stats.name}</h1>
             <div className="mt-1 flex items-center gap-2">
               <span
                 className={`rounded px-2 py-0.5 text-xs ${bonusTypeConfig[stats.bonus_type].bgColor} ${bonusTypeConfig[stats.bonus_type].color}`}

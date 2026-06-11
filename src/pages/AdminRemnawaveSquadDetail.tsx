@@ -45,7 +45,7 @@ export default function AdminRemnawaveSquadDetail() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/remnawave" />
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             {t('admin.remnawave.squads.detail', 'Squad Details')}
           </h1>
         </div>
@@ -76,7 +76,7 @@ export default function AdminRemnawaveSquadDetail() {
           </div>
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-xl font-bold text-dark-100">
             <Twemoji options={{ className: 'twemoji', folder: 'svg', ext: '.svg' }}>
               {squad.display_name || squad.name}
             </Twemoji>
