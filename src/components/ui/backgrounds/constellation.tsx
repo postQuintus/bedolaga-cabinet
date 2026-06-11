@@ -63,10 +63,17 @@ export default function ConstellationBackground({ settings }: Props) {
       canvas.height = nh * dpr;
       canvas.style.width = `${nw}px`;
       canvas.style.height = `${nh}px`;
-      if (stateRef.current) {
-        stateRef.current.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        stateRef.current.w = nw;
-        stateRef.current.h = nh;
+      const state = stateRef.current;
+      if (state) {
+        state.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (state.w > 0 && state.h > 0) {
+          for (const p of state.particles) {
+            p.x *= nw / state.w;
+            p.y *= nh / state.h;
+          }
+        }
+        state.w = nw;
+        state.h = nh;
       }
     };
 
@@ -87,8 +94,20 @@ export default function ConstellationBackground({ settings }: Props) {
       p.x += p.vx;
       p.y += p.vy;
 
-      if (p.x < 0 || p.x > w) p.vx = -p.vx;
-      if (p.y < 0 || p.y > h) p.vy = -p.vy;
+      if (p.x < 0) {
+        p.x = 0;
+        p.vx = Math.abs(p.vx);
+      } else if (p.x > w) {
+        p.x = w;
+        p.vx = -Math.abs(p.vx);
+      }
+      if (p.y < 0) {
+        p.y = 0;
+        p.vy = Math.abs(p.vy);
+      } else if (p.y > h) {
+        p.y = h;
+        p.vy = -Math.abs(p.vy);
+      }
     }
 
     ctx.strokeStyle = lineColor;
