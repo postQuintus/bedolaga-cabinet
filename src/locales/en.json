@@ -1153,6 +1153,8 @@
       "noiseDesc": "Noise gradients with motion",
       "ripple": "Ripple",
       "rippleDesc": "Ripple wave effect",
+      "fireflies": "Fireflies",
+      "firefliesDesc": "Drifting glowing dots with pulsation",
       "geminiEffect": "Gemini Effect",
       "geminiEffectDesc": "SVG effect like Google Gemini",
       "speed": "Speed",

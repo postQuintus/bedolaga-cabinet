@@ -1035,6 +1035,8 @@
       "noiseDesc": "带运动的噪声渐变",
       "ripple": "涟漪",
       "rippleDesc": "涟漪波纹效果",
+      "fireflies": "萤火虫",
+      "firefliesDesc": "漂浮闪烁的发光点",
       "geminiEffect": "Gemini效果",
       "geminiEffectDesc": "类似Google Gemini的SVG效果",
       "speed": "速度",

@@ -1183,6 +1183,8 @@
       "noiseDesc": "Шумовые градиенты с движением",
       "ripple": "Ripple",
       "rippleDesc": "Волновой эффект при клике",
+      "fireflies": "Fireflies",
+      "firefliesDesc": "Дрейфующие светящиеся точки с пульсацией",
       "geminiEffect": "Gemini Effect",
       "geminiEffectDesc": "SVG-эффект как на Google Gemini",
       "speed": "Скорость",

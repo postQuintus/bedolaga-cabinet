@@ -18,6 +18,7 @@ const backgroundImports: Record<Exclude<BackgroundType, 'none'>, () => Promise<u
   dots: () => import('./grid-background'),
   spotlight: () => import('./spotlight-bg'),
   ripple: () => import('./background-ripple'),
+  fireflies: () => import('./fireflies'),
 };
 
 /** Prefetch the JS chunk for a background type (call early to avoid lazy-load delay) */
@@ -47,6 +48,7 @@ export const backgroundComponents: Record<
   dots: lazy(() => import('./grid-background')),
   spotlight: lazy(() => import('./spotlight-bg')),
   ripple: lazy(() => import('./background-ripple')),
+  fireflies: lazy(() => import('./fireflies')),
 };
 
 // Registry of all background definitions with settings for the editor
@@ -575,6 +577,42 @@ export const backgroundRegistry: BackgroundDefinition[] = [
         max: 2,
         step: 0.1,
         default: 0.5,
+      },
+    ],
+  },
+  {
+    type: 'fireflies',
+    labelKey: 'admin.backgrounds.fireflies',
+    descriptionKey: 'admin.backgrounds.firefliesDesc',
+    category: 'canvas',
+    settings: [
+      { key: 'color', label: 'admin.backgrounds.particleColor', type: 'color', default: '#ffd166' },
+      {
+        key: 'count',
+        label: 'admin.backgrounds.count',
+        type: 'number',
+        min: 5,
+        max: 200,
+        step: 5,
+        default: 40,
+      },
+      {
+        key: 'speed',
+        label: 'admin.backgrounds.speed',
+        type: 'number',
+        min: 0.1,
+        max: 3,
+        step: 0.1,
+        default: 1,
+      },
+      {
+        key: 'size',
+        label: 'admin.backgrounds.size',
+        type: 'number',
+        min: 0.5,
+        max: 6,
+        step: 0.5,
+        default: 2,
       },
     ],
   },
