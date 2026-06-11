@@ -374,7 +374,7 @@ export default function AdminTickets() {
                       )}
                     </span>
                   </div>
-                  <div className="text-xs text-dark-500">
+                  <div className="text-xs text-dark-400">
                     {formatUser(ticket)}
                     {ticket.user?.telegram_id && (
                       <button

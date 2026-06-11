@@ -945,19 +945,19 @@ export default function AdminDashboard() {
           </h3>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <div>
-              <span className="text-dark-500">{t('adminDashboard.systemInfo.cabinet')}: </span>
+              <span className="text-dark-400">{t('adminDashboard.systemInfo.cabinet')}: </span>
               <span className="font-medium text-dark-200">v{CABINET_VERSION}</span>
             </div>
             <div>
-              <span className="text-dark-500">{t('adminDashboard.systemInfo.bot')}: </span>
+              <span className="text-dark-400">{t('adminDashboard.systemInfo.bot')}: </span>
               <span className="font-medium text-dark-200">v{systemInfo.bot_version}</span>
             </div>
             <div>
-              <span className="text-dark-500">{t('adminDashboard.systemInfo.python')}: </span>
+              <span className="text-dark-400">{t('adminDashboard.systemInfo.python')}: </span>
               <span className="font-medium text-dark-200">{systemInfo.python_version}</span>
             </div>
             <div>
-              <span className="text-dark-500">{t('adminDashboard.systemInfo.uptime')}: </span>
+              <span className="text-dark-400">{t('adminDashboard.systemInfo.uptime')}: </span>
               <span className="font-medium text-dark-200">
                 {(() => {
                   const s = systemInfo.uptime_seconds;

@@ -128,7 +128,7 @@ export default function AdminPromoOffers() {
             </div>
           ) : templates.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-dark-400">{t('admin.promoOffers.noData.templates')}</p>
+              <p className="text-dark-300">{t('admin.promoOffers.noData.templates')}</p>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -160,7 +160,7 @@ export default function AdminPromoOffers() {
                   <div className="space-y-2 text-sm">
                     {template.discount_percent > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-dark-300">
                           {t('admin.promoOffers.table.discount')}:
                         </span>
                         <span className="font-medium text-accent-400">
@@ -169,7 +169,7 @@ export default function AdminPromoOffers() {
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-dark-400">
+                      <span className="text-dark-300">
                         {t('admin.promoOffers.table.offerDuration')}:
                       </span>
                       <span className="text-dark-200">
@@ -178,7 +178,7 @@ export default function AdminPromoOffers() {
                     </div>
                     {template.active_discount_hours && (
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-dark-300">
                           {t('admin.promoOffers.table.discountDuration')}:
                         </span>
                         <span className="text-dark-200">
@@ -190,7 +190,7 @@ export default function AdminPromoOffers() {
                     )}
                     {template.test_duration_hours && (
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-dark-300">
                           {t('admin.promoOffers.table.testAccess')}:
                         </span>
                         <span className="text-dark-200">
@@ -209,7 +209,7 @@ export default function AdminPromoOffers() {
                           {t('admin.promoOffers.status.active')}
                         </span>
                       ) : (
-                        <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                        <span className="rounded bg-dark-700/50 px-2 py-0.5 text-xs text-dark-300">
                           {t('admin.promoOffers.status.inactive')}
                         </span>
                       )}
@@ -231,7 +231,7 @@ export default function AdminPromoOffers() {
             </div>
           ) : logs.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-dark-400">{t('admin.promoOffers.noData.logs')}</p>
+              <p className="text-dark-300">{t('admin.promoOffers.noData.logs')}</p>
             </div>
           ) : (
             <div className="space-y-3">
