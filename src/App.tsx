@@ -42,6 +42,7 @@ import TelegramRedirect from './pages/TelegramRedirect';
 import DeepLinkRedirect from './pages/DeepLinkRedirect';
 import VerifyEmail from './pages/VerifyEmail';
 import ResetPassword from './pages/ResetPassword';
+import PublicLegal from './pages/PublicLegal';
 import OAuthCallback from './pages/OAuthCallback';
 
 // Dashboard - load eagerly (default route, LCP-critical)
@@ -266,6 +267,8 @@ function App() {
         <Route path="/auth/oauth/callback" element={<OAuthCallback />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/offer" element={<PublicLegal doc="offer" />} />
+        <Route path="/privacy" element={<PublicLegal doc="privacy" />} />
         <Route
           path="/merge/:mergeToken"
           element={

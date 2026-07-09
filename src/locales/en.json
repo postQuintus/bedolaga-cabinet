@@ -4779,6 +4779,7 @@
     "loyalty": "Loyalty",
     "noFaq": "No FAQ available",
     "noContent": "No content available",
+    "documentUnavailable": "This document is not available yet.",
     "updatedAt": "Updated",
     "noLoyaltyTiers": "Loyalty program is not available yet",
     "yourProgress": "Your Progress",
