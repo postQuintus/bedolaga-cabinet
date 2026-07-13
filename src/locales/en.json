@@ -238,6 +238,15 @@
     "failed": "Verification Failed",
     "goToLogin": "Go to Login"
   },
+  "resetPassword": {
+    "title": "Set new password",
+    "enterNewPassword": "Enter your new password below.",
+    "success": "Password changed!",
+    "redirectingToLogin": "Redirecting to login...",
+    "setPassword": "Set new password",
+    "invalidToken": "Invalid reset link",
+    "tokenExpiredOrInvalid": "This password reset link is invalid or has expired."
+  },
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome, {{name}}!",
@@ -291,6 +300,7 @@
       "traffic": "Traffic",
       "devices": "Devices",
       "expiredDate": "Expired",
+      "expiredDate_trial": "Expired",
       "activeUntil": "Active until"
     },
     "suspended": {
@@ -5004,7 +5014,7 @@
       "test": "Test",
       "activating": "Activating...",
       "activate": "Activate",
-      "serverAccess": "Server access"
+      "serverAccess": "Access to {{count}} servers"
     },
     "deactivate": {
       "button": "Cancel promo code",
