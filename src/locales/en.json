@@ -1627,6 +1627,8 @@
       "openUrlDirectHint": "ON — the payment link opens immediately, without the intermediate button panel. OFF — an \"Open payment\" button is shown. Inside Telegram the link opens in the external browser either way (otherwise paying via a bank app/SBP fails); after payment the user returns to the result page. Stars/CryptoBot (t.me/ links) always open natively and ignore this flag.",
       "displayName": "Display name",
       "displayNameHint": "Leave empty for default name",
+      "description": "Description",
+      "descriptionHint": "Shown under the method name. Empty for default text",
       "subOptions": "Payment options",
       "minAmount": "Min amount (kopeks)",
       "maxAmount": "Max amount (kopeks)",

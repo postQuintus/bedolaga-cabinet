@@ -335,11 +335,11 @@ export default function Balance() {
                     onClick={() => method.is_available && navigate(`/balance/top-up/${method.id}`)}
                   >
                     <div className="font-semibold text-dark-100">
-                      {translatedName || method.name}
+                      {method.name || translatedName}
                     </div>
-                    {(translatedDesc || method.description) && (
+                    {(method.description || translatedDesc) && (
                       <div className="mt-1 text-sm text-dark-500">
-                        {translatedDesc || method.description}
+                        {method.description || translatedDesc}
                       </div>
                     )}
                     <div className="mt-3 text-xs text-dark-400">
