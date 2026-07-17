@@ -2032,12 +2032,20 @@ input[type="checkbox"]:hover:not(:checked) {
    shared `.card` class, not a replacement for it, so no other page changes.
    Border alpha matches postq-site's own glass cards (.pricing-card etc): 0.06
    reads as effectively borderless, relying on blur + shadow for definition
-   instead of a visible outline. */
+   instead of a visible outline.
+   Colors here are hardcoded literal rgba(), not `rgb(var(--color-accent-500)
+   / alpha)` — that variable holds the *generated 500-shade of the live
+   admin-configurable theme palette*, not the literal postq brand hex, so
+   piping it through an alpha-modified rgb() was producing a visibly bolder,
+   off-hue border instead of the barely-there postq tint. This whole section
+   is intentionally brand-specific chrome, hardcoded like postq-site's own
+   `--glass-border`/`--glass-bg` tokens (also plain hex, not palette-derived),
+   not tied to the cabinet's per-deployment theme system. */
 .mkt-glass-card {
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-color: rgb(var(--color-accent-500) / 0.06) !important;
+  border-color: rgba(207, 0, 163, 0.06) !important;
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
     0 8px 40px rgba(0, 0, 0, 0.2) !important;
@@ -2048,14 +2056,14 @@ input[type="checkbox"]:hover:not(:checked) {
    background/border formula as .mkt-glass-card, without the blur/shadow. */
 .mkt-glass-pill {
   background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgb(var(--color-accent-500) / 0.1) !important;
+  border-color: rgba(207, 0, 163, 0.1) !important;
   transition:
     background-color 0.2s,
     border-color 0.2s;
 }
 .mkt-glass-pill:hover {
-  background: rgb(var(--color-accent-500) / 0.08) !important;
-  border-color: rgb(var(--color-accent-500) / 0.2) !important;
+  background: rgba(207, 0, 163, 0.08) !important;
+  border-color: rgba(207, 0, 163, 0.2) !important;
 }
 
 /* Gradient CTA matching postq-site's .btn-accent / .pricing-cta */
@@ -2076,14 +2084,14 @@ input[type="checkbox"]:hover:not(:checked) {
 /* Bordered accent pill matching postq-site's .install-guide-btn */
 .mkt-btn-secondary {
   background: transparent !important;
-  border: 1px solid rgb(var(--color-accent-500) / 0.28) !important;
-  color: rgb(var(--color-accent-400)) !important;
+  border: 1px solid rgba(207, 0, 163, 0.28) !important;
+  color: #cf00a3 !important;
   box-shadow: none !important;
   border-radius: 10px !important;
 }
 .mkt-btn-secondary:hover {
-  background: rgb(var(--color-accent-500) / 0.1) !important;
-  border-color: rgb(var(--color-accent-500) / 0.45) !important;
+  background: rgba(207, 0, 163, 0.1) !important;
+  border-color: rgba(207, 0, 163, 0.45) !important;
 }
 
 /* Active tab in the login/register segmented toggle */
@@ -2097,7 +2105,7 @@ input[type="checkbox"]:hover:not(:checked) {
   border-color: rgba(215, 194, 240, 0.16) !important;
 }
 .mkt-input:focus {
-  border-color: rgb(var(--color-accent-500) / 0.45) !important;
+  border-color: rgba(207, 0, 163, 0.45) !important;
 }
 
 /* Divider lines inside the card, tinted to match the glass chrome instead of
