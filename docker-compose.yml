@@ -23,7 +23,6 @@ services:
       # Внутри контейнера nginx слушает на порту 80
       - '${CABINET_PORT:-3020}:80'
     volumes:
-      - /opt/cabinet-custom/index.html:/usr/share/nginx/html/index.html:ro
       - /opt/cabinet-custom/custom.css:/usr/share/nginx/html/custom.css:ro
       - /opt/cabinet-custom/fonts:/usr/share/nginx/html/fonts:ro
       - /opt/cabinet-custom/postq-custom.js:/usr/share/nginx/html/postq-custom.js:ro
