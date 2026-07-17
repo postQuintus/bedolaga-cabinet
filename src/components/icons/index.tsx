@@ -277,6 +277,37 @@ export const GlobeIcon = ({ className }: IconProps) => (
   <PiGlobe className={cn('h-5 w-5', className)} />
 );
 
+export const SupportIcon = ({ className }: IconProps) => (
+  <svg
+    className={cn('h-5 w-5', className)}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="12" r="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24m0-14.14l-4.24 4.24m-5.66 5.66l-4.24 4.24"
+    />
+  </svg>
+);
+
+export const SendIcon = ({ className }: IconProps) => (
+  <svg
+    className={cn('h-5 w-5', className)}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L15 22l-4-9-9-4 20-7z" />
+  </svg>
+);
+
 export const PlayIcon = ({ className }: IconProps) => (
   <PiPlay className={cn('h-4 w-4', className)} />
 );

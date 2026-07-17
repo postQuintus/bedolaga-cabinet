@@ -1893,3 +1893,298 @@ input[type="checkbox"]:hover:not(:checked) {
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   postq-site parity (Login page) — ported from postq-site's app/globals.css.
+   Prefixed `.mkt-` throughout so nothing here collides with the cabinet's
+   own component classes above. Colors are intentionally hardcoded to
+   postq-site's own values (this chrome is brand-specific, unlike the rest
+   of the cabinet's theme which is admin-configurable via ThemeColorsProvider).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* !important on the Display-font rules below (this one and the two other
+   "GT Eesti Pro Display" declarations further down): the /opt/cabinet-custom
+   overlay applies a blanket `* { font-family: ... !important }` in
+   production — these need to win over that universal rule to actually
+   render in the Display weight instead of Text. */
+.mkt-font-display {
+  font-family: "GT Eesti Pro Display", system-ui, -apple-system, sans-serif !important;
+}
+.mkt-font-text {
+  font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
+}
+
+.mkt-nav-link {
+  font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  color: rgba(215, 194, 240, 0.5);
+  transition: color 0.18s;
+  cursor: pointer;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.mkt-nav-link:hover {
+  color: rgba(215, 194, 240, 0.9);
+}
+
+.mkt-useful-link-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.mkt-useful-link-row:hover {
+  background: rgba(207, 0, 163, 0.1);
+}
+.mkt-useful-link-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(207, 0, 163, 0.1);
+  color: rgba(207, 0, 163, 0.9);
+}
+.mkt-useful-link-title {
+  display: block;
+  font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(215, 194, 240, 0.85);
+}
+.mkt-useful-link-desc {
+  display: block;
+  font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: rgba(215, 194, 240, 0.4);
+  margin-top: 2px;
+  white-space: normal;
+}
+
+/* Spotlight background orbs (login page backdrop) */
+.mkt-spotlight-orb {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+.mkt-spotlight-orb-1 {
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(
+    circle,
+    rgba(207, 0, 163, 0.25) 0%,
+    rgba(207, 0, 163, 0.19) 25%,
+    rgba(207, 0, 163, 0.1) 45%,
+    rgba(207, 0, 163, 0.035) 60%,
+    transparent 74%
+  );
+  top: -20%;
+  left: -15%;
+  animation: mkt-orb1 20s ease-in-out infinite alternate;
+}
+.mkt-spotlight-orb-2 {
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(
+    circle,
+    rgba(147, 27, 121, 0.19) 0%,
+    rgba(147, 27, 121, 0.145) 25%,
+    rgba(147, 27, 121, 0.08) 45%,
+    rgba(147, 27, 121, 0.027) 60%,
+    transparent 74%
+  );
+  top: 55%;
+  right: -5%;
+  animation: mkt-orb2 25s ease-in-out infinite alternate;
+}
+@keyframes mkt-orb1 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(12vw, 18vh) scale(1.08);
+  }
+}
+@keyframes mkt-orb2 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-14vw, -12vh) scale(1.1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-spotlight-orb-1,
+  .mkt-spotlight-orb-2 {
+    animation: none;
+  }
+}
+
+/* Glass-card treatment for the login/register card — layered on top of the
+   shared `.card` class, not a replacement for it, so no other page changes. */
+.mkt-glass-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgb(var(--color-accent-500) / 0.14) !important;
+}
+
+/* Site footer */
+.mkt-site-footer {
+  position: relative;
+  z-index: 1;
+  padding: 24px 24px 40px;
+}
+.mkt-footer-inner {
+  max-width: 1152px;
+  margin: 0 auto;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(207, 0, 163, 0.07);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  padding: 36px 32px 24px;
+}
+@media (max-width: 560px) {
+  .mkt-footer-inner {
+    padding: 28px 20px 20px;
+  }
+}
+.mkt-footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 40px;
+}
+.mkt-footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.mkt-footer-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mkt-footer-tagline {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(215, 194, 240, 0.45);
+  max-width: 300px;
+  margin: 0;
+}
+.mkt-footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+}
+.mkt-footer-col-title {
+  font-family: "GT Eesti Pro Display", system-ui, -apple-system, sans-serif !important;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgb(var(--color-dark-50));
+  margin: 0 0 6px;
+}
+.mkt-footer-nav-link {
+  font-size: 13px;
+  color: rgba(215, 194, 240, 0.55);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.mkt-footer-nav-link:hover {
+  color: rgb(var(--color-dark-50));
+  text-decoration: none;
+}
+.mkt-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.mkt-footer-bottom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.mkt-footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+@media (max-width: 900px) {
+  .mkt-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 24px;
+  }
+  .mkt-footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 560px) {
+  .mkt-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 32px;
+    padding-top: 18px;
+  }
+  .mkt-footer-bottom-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .mkt-footer-bottom-links .mkt-footer-dot {
+    display: none;
+  }
+}
+.mkt-footer-link {
+  font-family: "GT Eesti Pro Display", system-ui, -apple-system, sans-serif !important;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  color: rgba(215, 194, 240, 0.4);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.mkt-footer-link:hover {
+  color: rgba(215, 194, 240, 0.7);
+}
+
+.mkt-install-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(207, 0, 163, 0.28);
+  color: rgb(var(--color-accent-400));
+  font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.mkt-install-guide-btn:hover {
+  background: rgba(207, 0, 163, 0.1);
+  border-color: rgba(207, 0, 163, 0.45);
+  text-decoration: none;
+}
+.mkt-footer-brand .mkt-install-guide-btn {
+  margin-top: 8px;
+}
