@@ -1917,7 +1917,7 @@ input[type="checkbox"]:hover:not(:checked) {
 .mkt-nav-link {
   font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
   font-size: 13px;
-  color: rgba(215, 194, 240, 0.5);
+  color: rgba(215, 194, 240, 0.68);
   transition: color 0.18s;
   cursor: pointer;
   text-decoration: none;
@@ -1958,13 +1958,13 @@ input[type="checkbox"]:hover:not(:checked) {
   font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
   font-size: 13.5px;
   font-weight: 500;
-  color: rgba(215, 194, 240, 0.85);
+  color: rgba(215, 194, 240, 0.9);
 }
 .mkt-useful-link-desc {
   display: block;
   font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
   font-size: 12px;
-  color: rgba(215, 194, 240, 0.4);
+  color: rgba(215, 194, 240, 0.63);
   margin-top: 2px;
   white-space: normal;
 }
@@ -2106,7 +2106,12 @@ input[type="checkbox"]:hover:not(:checked) {
   background-color: rgba(215, 194, 240, 0.1) !important;
 }
 
-/* Site footer */
+/* Site footer — layout/colors re-checked 2026-07-17 against the live
+   postq.space build (the local /root/postq-site git clone was stale, so this
+   was verified from the deployed HTML/CSS/JS directly). Notably: the brand
+   column now carries its own copyright line + a plain-text "Бот в Telegram"
+   link (the old boxed CTA button is gone), and the whole footer sheet goes
+   edge-to-edge with squared bottom corners on narrow phones. */
 .mkt-site-footer {
   position: relative;
   z-index: 1;
@@ -2123,15 +2128,26 @@ input[type="checkbox"]:hover:not(:checked) {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   padding: 36px 32px 24px;
 }
-@media (max-width: 560px) {
+@media (max-width: 680px) {
   .mkt-footer-inner {
-    padding: 28px 20px 20px;
+    padding: 32px 28px 20px;
+  }
+}
+@media (max-width: 560px) {
+  /* Edge-to-edge "bottom sheet" on phones — no side/bottom page padding,
+     only the top corners stay rounded. */
+  .mkt-site-footer {
+    padding: 24px 0 0;
+  }
+  .mkt-footer-inner {
+    border-radius: 14px 14px 0 0;
+    padding: 28px 24px 20px;
   }
 }
 .mkt-footer-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1fr max-content max-content;
+  gap: 40px 64px;
 }
 .mkt-footer-brand {
   display: flex;
@@ -2144,12 +2160,28 @@ input[type="checkbox"]:hover:not(:checked) {
   align-items: center;
   gap: 10px;
 }
+.mkt-footer-copyright {
+  font-size: 13px;
+  color: rgba(215, 194, 240, 0.66);
+}
 .mkt-footer-tagline {
   font-size: 13px;
   line-height: 1.6;
-  color: rgba(215, 194, 240, 0.45);
+  color: rgba(215, 194, 240, 0.66);
   max-width: 300px;
   margin: 0;
+}
+.mkt-footer-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: auto;
+}
+@media (max-width: 680px) {
+  .mkt-footer-actions {
+    margin-top: 8px;
+  }
 }
 .mkt-footer-col {
   display: flex;
@@ -2160,13 +2192,14 @@ input[type="checkbox"]:hover:not(:checked) {
 .mkt-footer-col-title {
   font-family: "GT Eesti Pro Display", system-ui, -apple-system, sans-serif !important;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
+  text-transform: lowercase;
   color: rgb(var(--color-dark-50));
   margin: 0 0 6px;
 }
 .mkt-footer-nav-link {
   font-size: 13px;
-  color: rgba(215, 194, 240, 0.55);
+  color: rgba(215, 194, 240, 0.7);
   text-decoration: none;
   transition: color 0.18s ease;
 }
@@ -2197,8 +2230,14 @@ input[type="checkbox"]:hover:not(:checked) {
 }
 @media (max-width: 900px) {
   .mkt-footer-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 28px 24px;
+    column-gap: 40px;
+  }
+}
+@media (max-width: 680px) {
+  .mkt-footer-grid {
+    grid-template-columns: max-content max-content;
+    justify-content: space-between;
+    gap: 40px 56px;
   }
   .mkt-footer-brand {
     grid-column: 1 / -1;
@@ -2209,8 +2248,8 @@ input[type="checkbox"]:hover:not(:checked) {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-    margin-top: 32px;
-    padding-top: 18px;
+    margin-top: 40px;
+    padding-top: 22px;
   }
   .mkt-footer-bottom-links {
     flex-direction: column;
@@ -2225,36 +2264,28 @@ input[type="checkbox"]:hover:not(:checked) {
   font-family: "GT Eesti Pro Display", system-ui, -apple-system, sans-serif !important;
   font-size: 11px;
   letter-spacing: 0.07em;
-  color: rgba(215, 194, 240, 0.4);
+  color: rgba(215, 194, 240, 0.7);
   white-space: nowrap;
   text-decoration: none;
   transition: color 0.2s;
 }
 .mkt-footer-link:hover {
-  color: rgba(215, 194, 240, 0.7);
+  color: rgba(215, 194, 240, 0.95);
 }
 
-.mkt-install-guide-btn {
-  display: inline-flex;
+/* Payment-method marks (Мир/Visa/Mastercard/Bitcoin/USDT/Ethereum/BNB),
+   see PaymentIcons.tsx — decorative, sits opposite the legal links in
+   .mkt-footer-bottom. */
+.mkt-payment-icons {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(207, 0, 163, 0.28);
-  color: rgb(var(--color-accent-400));
-  font-family: "GT Eesti Pro Text", system-ui, -apple-system, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
+  gap: 16px;
+  color: rgba(215, 194, 240, 0.4);
 }
-.mkt-install-guide-btn:hover {
-  background: rgba(207, 0, 163, 0.1);
-  border-color: rgba(207, 0, 163, 0.45);
-  text-decoration: none;
-}
-.mkt-footer-brand .mkt-install-guide-btn {
-  margin-top: 8px;
+.mkt-payment-icon {
+  flex-shrink: 0;
+  width: auto;
+  height: 15px;
+  transition: color 0.18s;
 }

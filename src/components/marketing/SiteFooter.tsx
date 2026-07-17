@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { SendIcon } from '@/components/icons';
+import PaymentIcons from './PaymentIcons';
 
 const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || 'https://postq.space';
 const CABINET_URL = 'https://web.postq.space';
@@ -18,14 +18,18 @@ function Dot() {
   );
 }
 
+// Kept in sync with postq-site's src/components/Footer.tsx COLUMNS
+// (re-checked 2026-07-17 against the live postq.space build, since the local
+// /root/postq-site git clone was stale — "Личный кабинет" now leads the
+// "Продукт" column instead of trailing it).
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: 'Продукт',
     links: [
+      { label: 'Личный кабинет', href: CABINET_URL },
       { label: 'Цены', href: `${MARKETING_URL}/#pricing` },
       { label: 'Как подключить', href: `${MARKETING_URL}/#howto` },
       { label: 'FAQ', href: `${MARKETING_URL}/#faq` },
-      { label: 'Личный кабинет', href: CABINET_URL },
       { label: 'Статус серверов', href: 'https://status.postq.space' },
     ],
   },
@@ -90,36 +94,39 @@ export default function SiteFooter({
                 {appName}
               </span>
             </div>
-            <p className="mkt-footer-tagline">
-              Шифрует весь трафик и открывает доступ к любым сайтам. Серверы по всему миру, без
-              логов и слежки.
-            </p>
-            <a
-              href={`https://t.me/${TELEGRAM_BOT_USERNAME}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mkt-install-guide-btn"
-            >
-              <SendIcon className="h-3.5 w-3.5" /> @{TELEGRAM_BOT_USERNAME}
-            </a>
-            <div className="mkt-footer-socials">
-              <a
-                href="https://t.me/postq_news"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mkt-footer-nav-link"
-              >
-                Новости в Telegram
-              </a>
-              <Dot />
-              <a
-                href="https://www.threads.com/@postq_vpn"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mkt-footer-nav-link"
-              >
-                Threads
-              </a>
+            <span className="mkt-footer-copyright">
+              © {new Date().getFullYear()} {appName}
+            </span>
+            <p className="mkt-footer-tagline">Доступ к любым сайтам. Без логов и слежки.</p>
+            <div className="mkt-footer-actions">
+              <div className="mkt-footer-socials">
+                <a
+                  href={`https://t.me/${TELEGRAM_BOT_USERNAME}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mkt-footer-nav-link"
+                >
+                  Бот в Telegram
+                </a>
+                <Dot />
+                <a
+                  href="https://t.me/postq_news"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mkt-footer-nav-link"
+                >
+                  Новости в Telegram
+                </a>
+                <Dot />
+                <a
+                  href="https://www.threads.com/@postq_vpn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mkt-footer-nav-link"
+                >
+                  Threads
+                </a>
+              </div>
             </div>
           </div>
 
@@ -143,9 +150,6 @@ export default function SiteFooter({
 
         {showLegalLinks && (
           <div className="mkt-footer-bottom">
-            <span className="mkt-footer-link" style={{ cursor: 'default' }}>
-              © {new Date().getFullYear()} {appName}
-            </span>
             <div className="mkt-footer-bottom-links">
               <a
                 href="/offer"
@@ -173,7 +177,12 @@ export default function SiteFooter({
               >
                 {t('footer.recurrent', 'Рекуррентные платежи')}
               </a>
+              <Dot />
+              <a href="mailto:hello@postq.space" className="mkt-footer-link">
+                hello@postq.space
+              </a>
             </div>
+            <PaymentIcons />
           </div>
         )}
       </div>
