@@ -5,6 +5,13 @@ const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || 'https://postq.space
 const CABINET_URL = 'https://web.postq.space';
 const TELEGRAM_BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'postq_vpn_bot';
 
+// Our own links (postq.space, t.me/postq_*, @postq_vpn) open in the current
+// tab — it's still "our" site, just a different subdomain/service. Anything
+// else (third-party) opens in a new tab.
+function isOwnLink(href: string) {
+  return href.includes('postq');
+}
+
 function Dot() {
   return (
     <span
@@ -16,6 +23,12 @@ function Dot() {
     </span>
   );
 }
+
+const SOCIAL_LINKS: { label: string; href: string }[] = [
+  { label: 'Бот в Telegram', href: `https://t.me/${TELEGRAM_BOT_USERNAME}` },
+  { label: 'Новости в Telegram', href: 'https://t.me/postq_news' },
+  { label: 'Threads', href: 'https://www.threads.com/@postq_vpn' },
+];
 
 // Kept in sync with postq-site's src/components/Footer.tsx COLUMNS
 // (re-checked 2026-07-17 against the live postq.space build, since the local
@@ -90,32 +103,19 @@ export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }:
             <p className="mkt-footer-tagline">Доступ к любым сайтам. Без логов и слежки.</p>
             <div className="mkt-footer-actions">
               <div className="mkt-footer-socials">
-                <a
-                  href={`https://t.me/${TELEGRAM_BOT_USERNAME}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mkt-footer-nav-link"
-                >
-                  Бот в Telegram
-                </a>
-                <Dot />
-                <a
-                  href="https://t.me/postq_news"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mkt-footer-nav-link"
-                >
-                  Новости в Telegram
-                </a>
-                <Dot />
-                <a
-                  href="https://www.threads.com/@postq_vpn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mkt-footer-nav-link"
-                >
-                  Threads
-                </a>
+                {SOCIAL_LINKS.map((link, i) => (
+                  <span key={link.href} style={{ display: 'contents' }}>
+                    {i > 0 && <Dot />}
+                    <a
+                      href={link.href}
+                      target={isOwnLink(link.href) ? undefined : '_blank'}
+                      rel={isOwnLink(link.href) ? undefined : 'noopener noreferrer'}
+                      className="mkt-footer-nav-link"
+                    >
+                      {link.label}
+                    </a>
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -127,8 +127,8 @@ export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }:
                 <a
                   key={link.href}
                   href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  target={isOwnLink(link.href) ? undefined : '_blank'}
+                  rel={isOwnLink(link.href) ? undefined : 'noopener noreferrer'}
                   className="mkt-footer-nav-link"
                 >
                   {link.label}

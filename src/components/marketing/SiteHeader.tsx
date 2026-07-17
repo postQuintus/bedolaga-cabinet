@@ -44,7 +44,7 @@ interface SiteHeaderProps {
   hasCustomLogo: boolean;
 }
 
-function PersonalAccountButton() {
+function PersonalAccountButton({ fullWidth = false }: { fullWidth?: boolean }) {
   return (
     <motion.a
       href={CABINET_URL}
@@ -65,6 +65,7 @@ function PersonalAccountButton() {
         color: 'rgb(255, 255, 255)',
         transition:
           'color, background-color, border-color, box-shadow, transform, opacity 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+        width: fullWidth ? '100%' : undefined,
       }}
     >
       Личный кабинет
@@ -365,7 +366,7 @@ export default function SiteHeader({ appName, logoUrl, appLogo, hasCustomLogo }:
                       className="mkt-nav-link"
                       style={{
                         fontSize: '15px',
-                        color: 'rgba(215,194,240,0.65)',
+                        color: 'rgba(215,194,240,0.78)',
                         padding: '10px 0',
                         borderBottom: '1px solid rgba(207,0,163,0.06)',
                         textAlign: 'left',
@@ -387,7 +388,7 @@ export default function SiteHeader({ appName, logoUrl, appLogo, hasCustomLogo }:
                       fontSize: '11px',
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
-                      color: 'rgba(215,194,240,0.3)',
+                      color: 'rgba(215,194,240,0.58)',
                       margin: '14px 0 4px',
                     }}
                   >
@@ -405,7 +406,7 @@ export default function SiteHeader({ appName, logoUrl, appLogo, hasCustomLogo }:
                       style={{
                         display: 'block',
                         fontSize: '15px',
-                        color: 'rgba(215,194,240,0.65)',
+                        color: 'rgba(215,194,240,0.78)',
                         padding: '10px 0',
                         borderBottom: '1px solid rgba(207,0,163,0.06)',
                         textAlign: 'left',
@@ -418,7 +419,7 @@ export default function SiteHeader({ appName, logoUrl, appLogo, hasCustomLogo }:
                   ))}
 
                   <div style={{ marginTop: '12px' }}>
-                    <PersonalAccountButton />
+                    <PersonalAccountButton fullWidth />
                   </div>
                 </div>
               </motion.div>
