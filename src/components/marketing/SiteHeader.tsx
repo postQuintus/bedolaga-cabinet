@@ -1,16 +1,19 @@
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDownIcon, GlobeIcon, SupportIcon } from '@/components/icons';
+import { ChevronDownIcon, GlobeIcon, ServerIcon, SupportIcon } from '@/components/icons';
 
 const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || 'https://postq.space';
 const CABINET_URL = 'https://web.postq.space';
 
+// Kept in sync with postq-site's src/components/Header.tsx NAV_LINKS/USEFUL_LINKS
+// (re-checked 2026-07-17 against the live postq.space build, since the local
+// /root/postq-site git clone was stale — "Статус серверов" moved out of the
+// nav row into the "Полезное" dropdown, with its own description).
 const NAV_LINKS = [
   { label: 'Цены', href: `${MARKETING_URL}/#pricing` },
   { label: 'Как подключить', href: `${MARKETING_URL}/#howto` },
   { label: 'FAQ', href: `${MARKETING_URL}/#faq` },
-  { label: 'Статус серверов', href: 'https://status.postq.space' },
 ];
 
 const USEFUL_LINKS = [
@@ -19,6 +22,12 @@ const USEFUL_LINKS = [
     description: 'Инструкции и ответы на частые вопросы',
     href: `${MARKETING_URL}/help`,
     icon: SupportIcon,
+  },
+  {
+    label: 'Статус серверов',
+    description: 'Доступность серверов в реальном времени',
+    href: 'https://status.postq.space',
+    icon: ServerIcon,
   },
   {
     label: 'Узнать мой IP',
