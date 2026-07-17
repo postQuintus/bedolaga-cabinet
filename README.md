@@ -240,6 +240,7 @@ https://cabinet.example.com {
 | `VITE_TELEGRAM_BOT_USERNAME` | Username Telegram бота (без @) | — |
 | `VITE_APP_NAME` | Название в шапке и вкладке браузера | `Cabinet` |
 | `VITE_APP_LOGO` | Текст логотипа (1-2 символа) | `V` |
+| `VITE_MARKETING_URL` | Базовый URL маркетингового сайта (ссылки шапки/футера страницы логина) | `https://postq.space` |
 
 ### Runtime (только для Docker контейнера)
 

@@ -13,6 +13,7 @@ services:
         VITE_TELEGRAM_BOT_USERNAME: ${VITE_TELEGRAM_BOT_USERNAME}
         VITE_APP_NAME: ${VITE_APP_NAME:-Cabinet}
         VITE_APP_LOGO: ${VITE_APP_LOGO:-V}
+        VITE_MARKETING_URL: ${VITE_MARKETING_URL:-https://postq.space}
     container_name: cabinet_frontend
     restart: unless-stopped
     env_file:
@@ -21,6 +22,11 @@ services:
       # Маппинг: <хост-порт>:<контейнер-порт>
       # Внутри контейнера nginx слушает на порту 80
       - '${CABINET_PORT:-3020}:80'
+    volumes:
+      - /opt/cabinet-custom/index.html:/usr/share/nginx/html/index.html:ro
+      - /opt/cabinet-custom/custom.css:/usr/share/nginx/html/custom.css:ro
+      - /opt/cabinet-custom/fonts:/usr/share/nginx/html/fonts:ro
+      - /opt/cabinet-custom/postq-custom.js:/usr/share/nginx/html/postq-custom.js:ro
     healthcheck:
       # 127.0.0.1 вместо localhost: localhost может резолвиться в [::1], и на
       # образах, где nginx слушает только IPv4, healthcheck ложно падает
@@ -29,3 +35,8 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
+
+networks:
+  default:
+    external: true
+    name: remnawave_bot_network
