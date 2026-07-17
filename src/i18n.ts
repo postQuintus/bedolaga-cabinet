@@ -1,7 +1,5 @@
 import i18n, { type ResourceLanguage } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import { getTelegramLanguageCode } from './hooks/useTelegramSDK';
 
 const localeLoaders: Record<string, () => Promise<{ default: ResourceLanguage }>> = {
   ru: () => import('./locales/ru.json'),
@@ -27,34 +25,39 @@ async function loadLanguage(lng: string): Promise<void> {
   loadedLanguages.add(lng);
 }
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    fallbackLng: FALLBACK_LNG,
-    supportedLngs: SUPPORTED_LANGS,
-    partialBundledLanguages: true,
+// The cabinet must always default to Russian, regardless of device/browser
+// language or Telegram client language. It never auto-detects — the only way
+// to change language is the explicit LanguageSwitcher, whose choice is cached
+// below so it survives reloads.
+function getStoredLanguage(): string | null {
+  try {
+    const code = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return code && SUPPORTED_LANGS.includes(code) ? code : null;
+  } catch {
+    return null;
+  }
+}
 
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-      lookupLocalStorage: 'cabinet_language',
-    },
+i18n.use(initReactI18next).init({
+  lng: getStoredLanguage() || FALLBACK_LNG,
+  fallbackLng: FALLBACK_LNG,
+  supportedLngs: SUPPORTED_LANGS,
+  partialBundledLanguages: true,
 
-    interpolation: {
-      escapeValue: false,
-    },
+  interpolation: {
+    escapeValue: false,
+  },
 
-    react: {
-      useSuspense: false,
-    },
+  react: {
+    useSuspense: false,
+  },
 
-    showSupportNotice: false,
-  });
+  showSupportNotice: false,
+});
 
-// Load detected language + fallback on startup
-const detectedLng = i18n.language?.split('-')[0] || FALLBACK_LNG;
-const langsToLoad = [FALLBACK_LNG, ...(detectedLng !== FALLBACK_LNG ? [detectedLng] : [])];
+// Load the active language + fallback on startup
+const activeLng = i18n.language?.split('-')[0] || FALLBACK_LNG;
+const langsToLoad = [FALLBACK_LNG, ...(activeLng !== FALLBACK_LNG ? [activeLng] : [])];
 Promise.all(langsToLoad.map(loadLanguage));
 
 // Keep <html lang> + dir in sync with i18n so screen readers pronounce
@@ -73,30 +76,19 @@ function syncHtmlLang(lng: string): void {
     document.documentElement.dir = dir;
   }
 }
-syncHtmlLang(detectedLng);
+syncHtmlLang(activeLng);
 
-// Lazy-load on language change
+// Lazy-load on language change, and persist explicit user choices so they
+// survive reloads (there is no auto-detection to fall back on otherwise).
 i18n.on('languageChanged', (lng: string) => {
   const code = lng.split('-')[0];
   loadLanguage(code);
   syncHtmlLang(code);
-});
-
-/**
- * On first run inside Telegram (no explicit stored choice), adopt the user's
- * Telegram client language. Must be called after the Telegram SDK is initialised
- * (e.g. from main.tsx), since launch params are unavailable before init().
- */
-export function applyTelegramLanguage(): void {
   try {
-    if (localStorage.getItem(LANGUAGE_STORAGE_KEY)) return; // explicit choice wins
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
   } catch {
-    return;
+    // ignore (e.g. storage disabled)
   }
-  const code = getTelegramLanguageCode();
-  if (code && SUPPORTED_LANGS.includes(code) && i18n.language?.split('-')[0] !== code) {
-    i18n.changeLanguage(code);
-  }
-}
+});
 
 export default i18n;

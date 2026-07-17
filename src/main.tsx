@@ -27,7 +27,6 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { initLogoPreload } from './api/branding';
 import { checkBackendOnStartup } from './api/health';
 import { getCachedFullscreenEnabled, isTelegramMobile } from './hooks/useTelegramSDK';
-import { applyTelegramLanguage } from './i18n';
 import './styles/globals.css';
 
 // Harden the global encoders against lone UTF-16 surrogates (truncated emoji in
@@ -42,8 +41,7 @@ installEncodingSurrogateGuard();
 // See: https://github.com/Telegram-Mini-Apps/tma.js/issues/683
 if (typeof (Object as { hasOwn?: unknown }).hasOwn !== 'function') {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (Object as any).hasOwn = (obj: object, prop: PropertyKey): boolean =>
-    Object.prototype.hasOwnProperty.call(obj, prop);
+  (Object as any).hasOwn = (obj: object, prop: PropertyKey): boolean => Object.hasOwn(obj, prop);
 }
 
 // Only initialize Telegram SDK when running inside Telegram
@@ -63,9 +61,6 @@ if (isTelegramEnv && !alreadyInitialized) {
     restoreInitData();
 
     clearStaleSessionIfNeeded(retrieveRawInitData() || null);
-
-    // Adopt the user's Telegram client language on first run (no explicit choice yet).
-    applyTelegramLanguage();
 
     // Each mount in its own try/catch so one failure doesn't block others.
     // mountMiniApp() internally mounts themeParams in SDK v3,

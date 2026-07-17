@@ -122,21 +122,6 @@ export function getTelegramColorScheme(): 'light' | 'dark' | null {
   }
 }
 
-/**
- * The user's Telegram client language as a 2-letter code (e.g. 'en'), or null
- * outside Telegram / when unavailable.
- */
-export function getTelegramLanguageCode(): string | null {
-  if (!detectTelegram()) return null;
-  try {
-    const user = retrieveLaunchParams().tgWebAppData?.user as { languageCode?: string } | undefined;
-    const code = user?.languageCode;
-    return code ? code.split('-')[0].toLowerCase() : null;
-  } catch {
-    return null;
-  }
-}
-
 export type TelegramPlatform =
   | 'android'
   | 'ios'
