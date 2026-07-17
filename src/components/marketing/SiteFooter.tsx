@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import PaymentIcons from './PaymentIcons';
 
@@ -53,8 +52,6 @@ interface SiteFooterProps {
 }
 
 export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }: SiteFooterProps) {
-  const { t } = useTranslation();
-
   return (
     <motion.footer
       initial={{ opacity: 0 }}
@@ -141,32 +138,31 @@ export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }:
           ))}
         </div>
 
-        {/* Always shown — not gated behind the cabinet's "footerEnabled"
-            branding flag, since that flag was suppressing the payment-icon
-            row too (which isn't legal content and matches postq-site's own
-            footer, shown unconditionally there). */}
+        {/* Same two legal docs as postq-site's own footer, pointing at the
+            same place (the marketing site's pages, not the cabinet's own
+            /offer, /privacy, /recurrent-payments routes) — not gated behind
+            the cabinet's "footerEnabled" branding flag, since that flag was
+            suppressing the payment-icon row too (which isn't legal content
+            and matches postq-site's own footer, shown unconditionally
+            there). */}
         <div className="mkt-footer-bottom">
           <div className="mkt-footer-bottom-links">
-            <a href="/offer" target="_blank" rel="noopener noreferrer" className="mkt-footer-link">
-              {t('footer.offer', 'Публичная оферта')}
-            </a>
-            <Dot />
             <a
-              href="/privacy"
+              href={`${MARKETING_URL}/privacy`}
               target="_blank"
               rel="noopener noreferrer"
               className="mkt-footer-link"
             >
-              {t('footer.privacy', 'Политика конфиденциальности')}
+              политика конфиденциальности
             </a>
             <Dot />
             <a
-              href="/recurrent-payments"
+              href={`${MARKETING_URL}/terms`}
               target="_blank"
               rel="noopener noreferrer"
               className="mkt-footer-link"
             >
-              {t('footer.recurrent', 'Рекуррентные платежи')}
+              пользовательское соглашение
             </a>
             <Dot />
             <a href="mailto:hello@postq.space" className="mkt-footer-link">
