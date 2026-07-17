@@ -112,12 +112,6 @@ export default function Login() {
   });
   const isEmailAuthEnabled = emailAuthConfig?.enabled ?? true;
 
-  const { data: footerEnabled } = useQuery({
-    queryKey: ['footer-enabled'],
-    queryFn: brandingApi.getFooterEnabled,
-    staleTime: 60000,
-  });
-
   // Fetch enabled OAuth providers
   const { data: oauthData } = useQuery({
     queryKey: ['oauth-providers'],
@@ -728,7 +722,6 @@ export default function Login() {
         logoUrl={logoUrl}
         appLogo={appLogo}
         hasCustomLogo={Boolean(branding?.has_custom_logo)}
-        showLegalLinks={Boolean(footerEnabled)}
       />
     </div>
   );

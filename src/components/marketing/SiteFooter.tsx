@@ -50,16 +50,9 @@ interface SiteFooterProps {
   logoUrl: string | null;
   appLogo: string;
   hasCustomLogo: boolean;
-  showLegalLinks: boolean;
 }
 
-export default function SiteFooter({
-  appName,
-  logoUrl,
-  appLogo,
-  hasCustomLogo,
-  showLegalLinks,
-}: SiteFooterProps) {
+export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }: SiteFooterProps) {
   const { t } = useTranslation();
 
   return (
@@ -148,43 +141,40 @@ export default function SiteFooter({
           ))}
         </div>
 
-        {showLegalLinks && (
-          <div className="mkt-footer-bottom">
-            <div className="mkt-footer-bottom-links">
-              <a
-                href="/offer"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mkt-footer-link"
-              >
-                {t('footer.offer', 'Публичная оферта')}
-              </a>
-              <Dot />
-              <a
-                href="/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mkt-footer-link"
-              >
-                {t('footer.privacy', 'Политика конфиденциальности')}
-              </a>
-              <Dot />
-              <a
-                href="/recurrent-payments"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mkt-footer-link"
-              >
-                {t('footer.recurrent', 'Рекуррентные платежи')}
-              </a>
-              <Dot />
-              <a href="mailto:hello@postq.space" className="mkt-footer-link">
-                hello@postq.space
-              </a>
-            </div>
-            <PaymentIcons />
+        {/* Always shown — not gated behind the cabinet's "footerEnabled"
+            branding flag, since that flag was suppressing the payment-icon
+            row too (which isn't legal content and matches postq-site's own
+            footer, shown unconditionally there). */}
+        <div className="mkt-footer-bottom">
+          <div className="mkt-footer-bottom-links">
+            <a href="/offer" target="_blank" rel="noopener noreferrer" className="mkt-footer-link">
+              {t('footer.offer', 'Публичная оферта')}
+            </a>
+            <Dot />
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mkt-footer-link"
+            >
+              {t('footer.privacy', 'Политика конфиденциальности')}
+            </a>
+            <Dot />
+            <a
+              href="/recurrent-payments"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mkt-footer-link"
+            >
+              {t('footer.recurrent', 'Рекуррентные платежи')}
+            </a>
+            <Dot />
+            <a href="mailto:hello@postq.space" className="mkt-footer-link">
+              hello@postq.space
+            </a>
           </div>
-        )}
+          <PaymentIcons />
+        </div>
       </div>
     </motion.footer>
   );
