@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDownIcon, GlobeIcon, ServerIcon, SupportIcon } from '@/components/icons';
+import { ActivityIcon, ChevronDownIcon, GlobeIcon, LifeBuoyIcon } from './icons';
 
 const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || 'https://postq.space';
 const CABINET_URL = 'https://web.postq.space';
@@ -21,13 +21,13 @@ const USEFUL_LINKS = [
     label: 'Справочный центр',
     description: 'Инструкции и ответы на частые вопросы',
     href: `${MARKETING_URL}/help`,
-    icon: SupportIcon,
+    icon: LifeBuoyIcon,
   },
   {
     label: 'Статус серверов',
     description: 'Доступность серверов в реальном времени',
     href: 'https://status.postq.space',
-    icon: ServerIcon,
+    icon: ActivityIcon,
   },
   {
     label: 'Узнать мой IP',
