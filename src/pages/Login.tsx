@@ -11,7 +11,6 @@ import {
   getCachedBranding,
   setCachedBranding,
   preloadLogo,
-  isLogoPreloaded,
   type BrandingInfo,
   type EmailAuthEnabled,
 } from '../api/branding';
@@ -60,7 +59,6 @@ export default function Login() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
-  const [logoLoaded, setLogoLoaded] = useState(() => isLogoPreloaded());
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
@@ -345,37 +343,15 @@ export default function Login() {
         }}
       >
         <div className="relative w-full max-w-md space-y-5">
-          {/* Logo & branding */}
-          <div className="text-center">
-            <div className="relative mx-auto mb-3 flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-dark-700/50 bg-dark-800/80 shadow-md">
-              {/* Letter fallback */}
-              <span
-                className={`absolute text-lg font-bold text-accent-400 transition-opacity duration-200 ${branding?.has_custom_logo && logoLoaded ? 'opacity-0' : 'opacity-100'}`}
-              >
-                {appLogo}
-              </span>
-              {/* Logo image */}
-              {branding?.has_custom_logo && logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt={appName || 'Logo'}
-                  className={`absolute h-full w-full object-contain transition-opacity duration-200 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  onLoad={() => setLogoLoaded(true)}
-                />
-              )}
-            </div>
-            {appName && <h1 className="text-2xl font-bold text-dark-50">{appName}</h1>}
-
-            {/* Referral Banner */}
-            {referralCode && isEmailAuthEnabled && (
-              <div className="mt-3 rounded-xl border border-accent-500/30 bg-accent-500/10 p-2.5">
-                <div className="flex items-center justify-center gap-2 text-accent-400">
-                  <UsersIcon className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-xs font-medium">{t('auth.referralInvite')}</span>
-                </div>
+          {/* Referral Banner — logo/app name already shown in SiteHeader above, no need to repeat it here */}
+          {referralCode && isEmailAuthEnabled && (
+            <div className="rounded-xl border border-accent-500/30 bg-accent-500/10 p-2.5 text-center">
+              <div className="flex items-center justify-center gap-2 text-accent-400">
+                <UsersIcon className="h-4 w-4 flex-shrink-0" />
+                <span className="text-xs font-medium">{t('auth.referralInvite')}</span>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Check Email Screen */}
           {registeredEmail ? (
@@ -401,7 +377,7 @@ export default function Login() {
                   setRegisteredEmail(null);
                   setAuthMode('login');
                 }}
-                className="btn-secondary w-full"
+                className="btn-secondary mkt-btn-secondary w-full"
               >
                 {t('auth.backToLogin', 'Back to login')}
               </button>
@@ -429,7 +405,7 @@ export default function Login() {
                   <div className="space-y-3 text-center">
                     <button
                       onClick={handleRetryTelegramAuth}
-                      className="btn-primary mx-auto flex items-center gap-2 px-5 py-2.5"
+                      className="btn-primary mkt-btn-primary mx-auto flex items-center gap-2 px-5 py-2.5"
                     >
                       <RefreshIcon className="h-4 w-4" />
                       {t('auth.tryAgain')}
@@ -450,9 +426,9 @@ export default function Login() {
               {oauthProviders.length > 0 && (
                 <>
                   <div className="my-4 flex items-center gap-3">
-                    <div className="h-px flex-1 bg-dark-700" />
+                    <div className="mkt-divider h-px flex-1" />
                     <span className="text-xs text-dark-500">{t('auth.or', 'or')}</span>
-                    <div className="h-px flex-1 bg-dark-700" />
+                    <div className="mkt-divider h-px flex-1" />
                   </div>
                   <div className="flex items-stretch gap-2">
                     {oauthProviders.map((provider) => (
@@ -461,7 +437,7 @@ export default function Login() {
                         type="button"
                         onClick={() => handleOAuthLogin(provider.name)}
                         disabled={oauthLoading !== null}
-                        className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-xl border border-dark-700 bg-dark-800/80 py-2.5 transition-all hover:border-dark-600 hover:bg-dark-700 disabled:opacity-50"
+                        className="mkt-glass-pill flex flex-1 flex-col items-center justify-center gap-1.5 rounded-xl border py-2.5 transition-all disabled:opacity-50"
                         title={provider.display_name}
                       >
                         {oauthLoading === provider.name ? (
@@ -482,11 +458,11 @@ export default function Login() {
               {isEmailAuthEnabled && (
                 <>
                   <div className="my-4 flex items-center gap-3">
-                    <div className="h-px flex-1 bg-dark-700" />
+                    <div className="mkt-divider h-px flex-1" />
                     <button
                       type="button"
                       onClick={() => setShowEmailForm(!showEmailForm)}
-                      className="flex items-center gap-1.5 rounded-full border border-dark-700 bg-dark-800/60 px-3.5 py-1.5 text-xs font-medium text-dark-300 transition-all hover:border-dark-600 hover:bg-dark-700 hover:text-dark-200"
+                      className="mkt-glass-pill flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium text-dark-300 transition-all hover:text-dark-200"
                     >
                       <EmailIcon className="h-3.5 w-3.5 text-dark-400" />
                       <span>{t('auth.loginWithEmail')}</span>
@@ -494,7 +470,7 @@ export default function Login() {
                         className={`h-3 w-3 text-dark-400 transition-transform duration-300 ${showEmailForm ? 'rotate-180' : ''}`}
                       />
                     </button>
-                    <div className="h-px flex-1 bg-dark-700" />
+                    <div className="mkt-divider h-px flex-1" />
                   </div>
 
                   {/* Collapsible email form */}
@@ -549,7 +525,7 @@ export default function Login() {
                                     value={forgotPasswordEmail}
                                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
                                     placeholder="you@example.com"
-                                    className="input"
+                                    className="input mkt-input"
                                     autoFocus
                                   />
                                 </div>
@@ -559,7 +535,7 @@ export default function Login() {
                                 <button
                                   type="submit"
                                   disabled={forgotPasswordLoading}
-                                  className="btn-primary w-full py-2.5"
+                                  className="btn-primary mkt-btn-primary w-full py-2.5"
                                 >
                                   {forgotPasswordLoading ? (
                                     <span className="flex items-center justify-center gap-2">
@@ -585,12 +561,12 @@ export default function Login() {
                         ) : (
                           /* Normal login / register */
                           <>
-                            <div className="flex rounded-lg bg-dark-800 p-1">
+                            <div className="mkt-glass-pill flex rounded-lg border p-1">
                               <button
                                 type="button"
                                 className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
                                   authMode === 'login'
-                                    ? 'bg-accent-500 text-on-accent'
+                                    ? 'mkt-toggle-active text-on-accent'
                                     : 'text-dark-400 hover:text-dark-200'
                                 }`}
                                 onClick={() => setAuthMode('login')}
@@ -601,7 +577,7 @@ export default function Login() {
                                 type="button"
                                 className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
                                   authMode === 'register'
-                                    ? 'bg-accent-500 text-on-accent'
+                                    ? 'mkt-toggle-active text-on-accent'
                                     : 'text-dark-400 hover:text-dark-200'
                                 }`}
                                 onClick={() => setAuthMode('register')}
@@ -621,7 +597,7 @@ export default function Login() {
                                     name="firstName"
                                     type="text"
                                     autoComplete="given-name"
-                                    className="input"
+                                    className="input mkt-input"
                                     placeholder={t(
                                       'auth.firstNamePlaceholder',
                                       'Your name (optional)',
@@ -642,7 +618,7 @@ export default function Login() {
                                   type="email"
                                   autoComplete="email"
                                   required
-                                  className="input"
+                                  className="input mkt-input"
                                   placeholder="you@example.com"
                                   value={email}
                                   onChange={(e) => setEmail(e.target.value)}
@@ -661,7 +637,7 @@ export default function Login() {
                                     authMode === 'login' ? 'current-password' : 'new-password'
                                   }
                                   required
-                                  className="input"
+                                  className="input mkt-input"
                                   placeholder="••••••••"
                                   value={password}
                                   onChange={(e) => setPassword(e.target.value)}
@@ -689,7 +665,7 @@ export default function Login() {
                                     type="password"
                                     autoComplete="new-password"
                                     required
-                                    className="input"
+                                    className="input mkt-input"
                                     placeholder="••••••••"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -700,7 +676,7 @@ export default function Login() {
                               <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="btn-primary w-full py-2.5"
+                                className="btn-primary mkt-btn-primary w-full py-2.5"
                               >
                                 {isLoading ? (
                                   <span className="flex items-center justify-center gap-2">
