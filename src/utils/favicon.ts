@@ -6,16 +6,28 @@
  * logo (or a brand-letter monogram) via {@link setFavicon}.
  */
 
-/** Point the page favicon at `href`, creating the <link> if needed. */
+/**
+ * Point the page favicon at `href`, creating the <link> if needed.
+ *
+ * index.html carries two `rel="icon"` links (an .ico fallback for browsers
+ * without SVG favicon support, plus an SVG one) so every browser has one to
+ * pick from — both must be updated here, or whichever one the browser doesn't
+ * prefer keeps showing the static build-time monogram instead of the real
+ * branding.
+ */
 export function setFavicon(href: string): void {
   if (!href) return;
-  let link = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
-  if (!link) {
-    link = document.createElement('link');
+  const links = document.querySelectorAll<HTMLLinkElement>("link[rel='icon']");
+  if (links.length === 0) {
+    const link = document.createElement('link');
     link.rel = 'icon';
+    link.href = href;
     document.head.appendChild(link);
+    return;
   }
-  link.href = href;
+  links.forEach((link) => {
+    link.href = href;
+  });
 }
 
 /**
