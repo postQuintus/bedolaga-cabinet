@@ -2,16 +2,17 @@
 <html lang="ru" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <!-- favicon.ico/apple-touch-icon.png are static fallbacks for browsers that
-         don't support SVG favicons (notably Safari, both desktop and iOS) —
-         the inline SVG below is preferred by browsers that do. -->
+    <!-- Static build-time favicon: postq vpn's own shield mark (same asset
+         served by the backend at /cabinet/branding/logo for this deployment),
+         so unauthenticated pages (e.g. /login, before branding loads) show the
+         real brand instead of a generic monogram. favicon.ico/apple-touch-icon.png
+         are raster fallbacks for browsers without SVG favicon support (notably
+         Safari, both desktop and iOS) — favicon.svg is preferred where supported.
+         Runtime code in utils/favicon.ts overrides these with the actual
+         per-deployment branding logo once it loads (see useBranding / Login.tsx). -->
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230a0f1a'/%3E%3Ctext%20x='50%25'%20y='50%25'%20font-family='Manrope,Arial,sans-serif'%20font-size='38'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%20dominant-baseline='central'%3EV%3C/text%3E%3C/svg%3E"
-    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"

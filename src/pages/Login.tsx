@@ -25,6 +25,7 @@ import { getPendingReferralCode } from '../utils/referral';
 import { UsersIcon, EmailIcon, RefreshIcon, ChevronDownIcon } from '@/components/icons';
 import SiteHeader from '../components/marketing/SiteHeader';
 import SiteFooter from '../components/marketing/SiteFooter';
+import { setFavicon, letterFaviconDataUri, roundedFaviconDataUri } from '../utils/favicon';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -155,6 +156,25 @@ export default function Login() {
   useEffect(() => {
     document.title = appName || 'VPN';
   }, [appName]);
+
+  // The login page is public/unauthenticated, so it never goes through the
+  // auth-gated useBranding hook — without this it kept the static index.html
+  // fallback favicon instead of the real branding logo (same pattern as
+  // QuickPurchase.tsx's standalone landing page).
+  useEffect(() => {
+    if (!branding) return;
+    if (!logoUrl) {
+      setFavicon(letterFaviconDataUri(appLogo));
+      return;
+    }
+    let cancelled = false;
+    roundedFaviconDataUri(logoUrl).then((rounded) => {
+      if (!cancelled) setFavicon(rounded || logoUrl);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [branding, logoUrl, appLogo]);
 
   useEffect(() => {
     if (isAuthenticated) {
