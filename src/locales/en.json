@@ -1508,7 +1508,10 @@
         "removeItem": "Remove {{label}}",
         "clearAll": "Clear all selections",
         "addScope": "Add scope",
-        "maxReached": "Maximum {{max}} items"
+        "maxReached": "Maximum {{max}} items",
+        "fullNetwork": "Full network",
+        "fullNetworkHint": "Show the entire graph",
+        "removeFullNetwork": "Turn off full network mode"
       },
       "loading": "Loading graph...",
       "error": "Failed to load network data",
