@@ -535,6 +535,15 @@ export const adminUsersApi = {
     return response.data;
   },
 
+  // Send direct Telegram message to user via bot (parity with bot's admin action)
+  sendMessage: async (
+    userId: number,
+    text: string,
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await apiClient.post(`/cabinet/admin/users/${userId}/send-message`, { text });
+    return response.data;
+  },
+
   // Update restrictions
   updateRestrictions: async (
     userId: number,

@@ -633,6 +633,9 @@
       "jupiter": {
         "description": "通过 Jupiter (FPGate P2P) 使用 SBP 支付"
       },
+      "cispay": {
+        "description": "通过 cisPay 使用银行卡或 SBP 支付"
+      },
       "donut": {
         "description": "通过 Donut P2P 使用银行卡或 SBP 支付"
       },
@@ -1420,7 +1423,7 @@
     },
     "paymentMethods": {
       "title": "支付方法",
-      "description": "配置顺序和显示条件",
+      "subtitle": "配置顺序和显示条件",
       "enabled": "开启",
       "disabled": "关闭",
       "notConfigured": "未配置",
@@ -1436,6 +1439,8 @@
       "openUrlDirectHint": "开启 — 支付链接立即打开,不显示中间的按钮面板。关闭 — 显示「打开支付」按钮。在 Telegram 内两种情况都会在外部浏览器中打开链接(否则通过银行 App/SBP 付款会失败);支付完成后返回结果页。Stars/CryptoBot(t.me/ 链接)始终原生打开,不受此开关影响。",
       "displayName": "显示名称",
       "displayNameHint": "留空以使用默认名称",
+      "description": "描述",
+      "descriptionHint": "显示在支付方法名称下方。留空则使用默认文本",
       "subOptions": "支付选项",
       "minAmount": "最小金额（戈比）",
       "maxAmount": "最大金额（戈比）",
@@ -1919,6 +1924,7 @@
         "payments_etoplatezhi": "Etoplatezhi",
         "payments_antilopay": "Antilopay",
         "payments_jupiter": "Jupiter",
+        "payments_cispay": "CisPay",
         "payments_donut": "Donut",
         "payments_lava": "Lava",
         "payments_apple_iap": "Apple IAP",
@@ -2668,7 +2674,8 @@
         "subscriptionDays": "订阅天数",
         "trialSubscription": "试用订阅",
         "promoGroup": "折扣组",
-        "discount": "折扣 %"
+        "discount": "折扣 %",
+        "balanceAndDays": "余额 + 天数"
       },
       "modal": {
         "editPromocode": "编辑促销码",
@@ -2686,6 +2693,11 @@
         "typeTrialSubscription": "试用订阅",
         "typePromoGroup": "折扣组",
         "typeDiscount": "百分比折扣",
+        "typeBonusSet": "奖励组合（余额 / 天数 / 优惠组）",
+        "bonusComposition": "促销码内容",
+        "includeBalance": "余额奖励",
+        "includeDays": "订阅天数",
+        "includePromoGroup": "优惠组",
         "bonusAmount": "奖金金额",
         "rub": "卢布",
         "daysCount": "天数",
@@ -2775,6 +2787,7 @@
       },
       "validation": {
         "codeRequired": "请输入促销码",
+        "bonusSetEmpty": "请为促销码至少选择一项奖励",
         "balanceRequired": "奖金金额必须大于0",
         "daysRequired": "天数必须大于0",
         "groupRequired": "请选择折扣组",
@@ -3152,6 +3165,20 @@
       },
       "notFound": "未找到用户",
       "purchaseCount": "购买次数：{{count}}",
+      "sendMessage": {
+        "button": "✉️ 发送消息",
+        "title": "向用户发送消息",
+        "placeholder": "机器人将发送给用户的文本（支持 HTML）",
+        "send": "发送",
+        "sending": "发送中...",
+        "success": "消息已发送给用户",
+        "noTelegram": "该用户仅通过邮箱注册，无法接收 Telegram 消息",
+        "errors": {
+          "no_telegram_id": "该用户仅通过邮箱注册，无法接收 Telegram 消息",
+          "forbidden": "用户已屏蔽机器人或无法接收消息",
+          "bad_request": "Telegram 拒绝了该消息。请检查文本（HTML 标记）后重试"
+        }
+      },
       "userActions": {
         "delete": "删除用户",
         "disable": "禁用",
