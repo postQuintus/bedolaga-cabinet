@@ -11,7 +11,7 @@ const CABINET_URL = 'https://web.postq.space';
 // /root/postq-site git clone was stale — "Статус серверов" moved out of the
 // nav row into the "Полезное" dropdown, with its own description).
 const NAV_LINKS = [
-  { label: 'Цены', href: `${MARKETING_URL}/#pricing` },
+  { label: 'Подписка', href: `${MARKETING_URL}/#pricing` },
   { label: 'Как подключить', href: `${MARKETING_URL}/#howto` },
   { label: 'FAQ', href: `${MARKETING_URL}/#faq` },
 ];

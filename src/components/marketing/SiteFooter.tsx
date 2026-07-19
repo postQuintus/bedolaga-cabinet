@@ -39,7 +39,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     title: 'Продукт',
     links: [
       { label: 'Личный кабинет', href: CABINET_URL },
-      { label: 'Цены', href: `${MARKETING_URL}/#pricing` },
+      { label: 'Подписка', href: `${MARKETING_URL}/#pricing` },
       { label: 'Как подключить', href: `${MARKETING_URL}/#howto` },
       { label: 'FAQ', href: `${MARKETING_URL}/#faq` },
       { label: 'Статус серверов', href: 'https://status.postq.space' },
@@ -153,7 +153,7 @@ export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }:
               rel="noopener noreferrer"
               className="mkt-footer-link"
             >
-              политика конфиденциальности
+              Политика конфиденциальности
             </a>
             <Dot />
             <a
@@ -162,7 +162,7 @@ export default function SiteFooter({ appName, logoUrl, appLogo, hasCustomLogo }:
               rel="noopener noreferrer"
               className="mkt-footer-link"
             >
-              пользовательское соглашение
+              Пользовательское соглашение
             </a>
             <Dot />
             <a href="mailto:hello@postq.space" className="mkt-footer-link">
