@@ -3152,6 +3152,20 @@
       },
       "notFound": "未找到用户",
       "purchaseCount": "购买次数：{{count}}",
+      "sendMessage": {
+        "button": "✉️ 发送消息",
+        "title": "向用户发送消息",
+        "placeholder": "机器人将发送给用户的文本（支持 HTML）",
+        "send": "发送",
+        "sending": "发送中...",
+        "success": "消息已发送给用户",
+        "noTelegram": "该用户仅通过邮箱注册，无法接收 Telegram 消息",
+        "errors": {
+          "no_telegram_id": "该用户仅通过邮箱注册，无法接收 Telegram 消息",
+          "forbidden": "用户已屏蔽机器人或无法接收消息",
+          "bad_request": "Telegram 拒绝了该消息。请检查文本（HTML 标记）后重试"
+        }
+      },
       "userActions": {
         "delete": "删除用户",
         "disable": "禁用",

@@ -3353,6 +3353,20 @@
       "confirm": {
         "block": "Block this user?"
       },
+      "sendMessage": {
+        "button": "✉️ Send message",
+        "title": "Send message to user",
+        "placeholder": "Text the bot will send to the user (HTML supported)",
+        "send": "Send",
+        "sending": "Sending...",
+        "success": "Message sent to user",
+        "noTelegram": "This user is registered by email only and cannot receive Telegram messages",
+        "errors": {
+          "no_telegram_id": "This user is registered by email only and cannot receive Telegram messages",
+          "forbidden": "The user has blocked the bot or cannot receive messages",
+          "bad_request": "Telegram rejected the message. Check the text (HTML markup) and try again"
+        }
+      },
       "userActions": {
         "delete": "Delete user",
         "resetTrial": "Reset trial",
